@@ -1,5 +1,6 @@
 import pprint
 import io
+import ctypes
 
 
 pp = pprint.PrettyPrinter(indent=4)
@@ -74,17 +75,99 @@ def at_pool(clazz,index):
 def big(bs):
     return int.from_bytes(bs, 'big')
 
-def execute_method(clazz):
-    print(at_pool(clazz, clazz['methods'][0]['attributes'][0]['attribute_name_index']))
-    s = io.BytesIO( clazz['methods'][0]['attributes'][0]['bytes'])
+def desc_bytes(bs):
+    for b in bs:
+        print(f'{b:08b}',end=' ')
+    print()
+
+def name_of_class(clazz, index):
+    return clazz['constant_pool'][clazz['constant_pool'][index]['name_index']]['value']
+
+def name_of_member(clazz, index):
+    return clazz['constant_pool'][clazz['constant_pool'][index]['name_index']]['value']
+def type_of(obj):
+    if obj['type'] == 'FakePrintStream':
+        print(obj)
+        return 'java/io/PrintStream'
+    else:
+        assert False, f'{obj=} not supported.'
+
+getstatic = 0xb2
+ldc = 0x12
+invokevirtual = 0xb6
+ret = 0xb1
+bipush = 0x10
+def execute_code(clazz, code):
+    s = io.BytesIO(code)
+    # \xb2\x00\x02
+    # \x12\x03
+    # \xb6\x00\x04
+    # \xb1'
+    stack = []
+    while s.tell() < len(code):
+        opcode = read_u1(s)
+        if opcode == getstatic:
+            index = read_u2(s)
+            print("index = ", name_of_class(clazz, at_pool(clazz,index)['name_and_type_index']))
+            if name_of_class(clazz, at_pool(clazz,index)['class_index']) != 'java/lang/System':
+                assert False, "unsupported class of a field."
+            if name_of_class(clazz, at_pool(clazz,index)['name_and_type_index']) != 'out':
+                assert False, "unsupported class of a field."
+            stack.append({'type': 'FakePrintStream'})
+
+        elif opcode == bipush:
+            val = ctypes.c_int8(read_u1(s)).value
+            stack.append({'type':'Number', 'value': val})
+        elif opcode == ldc:
+            index = read_u1(s)
+            if  at_pool(clazz,index)['tag'] != CONSTANT_STRING:
+                assert False, f"{at_pool(clazz,index)['tag']} is not supported."
+            # print("ldc ",  at_pool(clazz,index))
+            stack.append({'type':'Constant', 'value': at_pool(clazz,at_pool(clazz,index)['string_index'])['value']})
+        elif opcode == invokevirtual:
+            index = read_u2(s)
+            method_name = name_of_class(clazz, at_pool(clazz,index)['name_and_type_index'])
+            print(f"{method_name=}")
+            if method_name != 'println':
+                assert False, f"{method_name} is not supported."
+            obj = stack[-2]
+            print(name_of_class(clazz, at_pool(clazz,index)['class_index']))
+            if type_of(obj) != name_of_class(clazz, at_pool(clazz,index)['class_index']):
+                assert False, f'{obj} not supported.'
+
+            val = stack[-1]
+            print(val['value'])
+        elif opcode == ret:
+            return
+        else:
+            assert False, f"{hex(opcode)} to be implemented"
+
+
+def execute_method(method):
+    print(at_pool(clazz, method['name_index']))
+    s = io.BytesIO(method['attributes'][0]['bytes'])
     code = {}
     code['max_stacks'] = read_u2(s)
     code['max_locals'] = read_u2(s)
     code['code_length'] = read_u4(s)
     code['bytes'] = read_bytes(s,code['code_length'])
-    print(at_pool(clazz, code['max_stacks']))
+    code['exception_table_length'] = read_u2(s)
+    code['exception_table'] = read_bytes(s,code['exception_table_length'])
+    code['attributes_count'] = read_u2(s)
+    code['attributes'] = []
+    for i in range(0, code['attributes_count']):
+        attribute = {}
+        attribute['attribute_name_index'] = read_u2(s)
+        print(at_pool(clazz,attribute['attribute_name_index']))
+        attribute['attribute_length'] = read_u4(s)
+        attribute['bytes'] = read_bytes(s,attribute['attribute_length'])
+        code['attributes'].append(attribute)
+
+    pp.pprint(code)
+    execute_code(clazz, code['bytes'])
     print(code['bytes'])
-    pp.pprint(b'\xb7')
+    # print(at_pool(clazz, 27))
+    # desc_bytes(code['bytes'])
 
 
 
@@ -95,14 +178,12 @@ with open("Demo.class",'rb') as f:
     clazz['major_version'] = hex(int.from_bytes(f.read(2),'big'))
     clazz['constant_pool_count'] = int.from_bytes(f.read(2),'big')
     clazz["constant_pool"] = read_constant_pool(f, clazz)
-    print(f"{clazz}")
     clazz['access_flags'] = int.from_bytes(f.read(2),'big')
-    print("access_flags", format(clazz['access_flags'],"016b"))
     clazz['this_class'] = int.from_bytes(f.read(2),'big')
-    print("class", clazz['constant_pool'][clazz['constant_pool'][clazz['this_class']]['name_index']])
+    # print("class", clazz['constant_pool'][clazz['constant_pool'][clazz['this_class']]['name_index']])
 
     clazz['super_class'] = int.from_bytes(f.read(2),'big')
-    print("class", clazz['constant_pool'][clazz['constant_pool'][clazz['super_class']]['name_index']])
+    # print("class", clazz['constant_pool'][clazz['constant_pool'][clazz['super_class']]['name_index']])
 
     clazz['interfaces_count'] = read_u2(f)
     clazz['interfaces'] = []
@@ -128,14 +209,14 @@ with open("Demo.class",'rb') as f:
         clazz['fields'].append(field)
 
     clazz['methods_count'] = read_u2(f)
-    print("method count=", clazz['methods_count'])
+    # print("method count=", clazz['methods_count'])
 
     clazz['methods']= []
     for i in range(0, clazz['methods_count']):
         method = {}
         method['access_flags'] = read_u2(f)
         method['name_index'] = read_u2(f);
-        print("method name", clazz['constant_pool'][method['name_index']])
+        # print("method name", clazz['constant_pool'][method['name_index']])
         method['descriptor_index'] = read_u2(f);
         method['attributes_count'] = read_u2(f);
         attributes = []
@@ -158,10 +239,24 @@ with open("Demo.class",'rb') as f:
         clazz['attributes'].append(attribute)
     pp.pprint("---------------------")
     pp.pprint(clazz)
-    pp.pprint(at_pool(clazz, clazz['methods'][1]['descriptor_index']))
-    pp.pprint(at_pool(clazz, clazz['methods'][1]['name_index']))
-    pp.pprint(at_pool(clazz, clazz['methods'][1]['attributes'][0]['attribute_name_index']))
-    execute_method(clazz)
+    # pp.pprint(at_pool(clazz, clazz['methods'][1]['descriptor_index']))
+    # pp.pprint(at_pool(clazz, clazz['methods'][1]['name_index']))
+    # pp.pprint(at_pool(clazz, clazz['methods'][1]['attributes'][0]['attribute_name_index']))
 
 
+print("----------------execute methods---------------------")
 
+def find_method_by_name(clazz, name:str ):
+    for method in clazz['methods']:
+        if clazz['constant_pool'][method['name_index']]['value'] == name:
+            return method
+
+# for method in clazz['methods']:
+# print(find_method_by_name(clazz, 'main'))
+
+
+# execute_code(clazz, clazz['methods'][1]['attributes'][0]['bytes'])
+execute_method(find_method_by_name(clazz, 'main'))
+for method in clazz['methods']:
+    pass
+    # pp.pprint(at_pool(clazz, method['descriptor_index']))
