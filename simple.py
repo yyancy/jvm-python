@@ -19,6 +19,7 @@ CONSTANT_UTF8                =   1
 CONSTANT_METHOD_HANDLE       =   15
 CONSTANT_METHOD_TYPE         =   16
 CONSTANT_INVOKE_DYNAMIC      =   18
+
 def read_ubytes(f, count):
     return int.from_bytes(f.read(count),'big')
 
@@ -27,7 +28,6 @@ def read_bytes(f, count):
 
 def read_u1(f):
     return read_ubytes(f, 1)
-
 def read_u2(f):
     return read_ubytes(f, 2)
 def read_u4(f):
@@ -39,13 +39,11 @@ def read_constant_pool(f, clazz):
     constant_pool = [{}]
     for i in range(1, clazz['constant_pool_count']):
         tag = read_u1(f)
-        print(f"{tag=}")
         if tag == CONSTANT_METHODREF or tag == CONSTANT_FIELDREF or tag == CONSTANT_INTERFACE_METHODREF:
             info = {"tag":tag}
             info["class_index"] = read_u2(f)
             info["name_and_type_index"] = read_u2(f)
             constant_pool.append(info)
-            print(info)
         elif tag == CONSTANT_STRING:
             info = {"tag":tag}
             info["string_index"] = read_u2(f)
@@ -59,7 +57,6 @@ def read_constant_pool(f, clazz):
             info["name_index"] = read_u2(f)
             info["descriptor_index"] = read_u2(f)
             constant_pool.append(info)
-            print(info)
         elif tag == CONSTANT_UTF8:
             info = {"tag":tag}
             info["length"] = read_u2(f)
@@ -72,22 +69,18 @@ def read_constant_pool(f, clazz):
 def at_pool(clazz,index):
     return clazz['constant_pool'][index]
 
-def big(bs):
-    return int.from_bytes(bs, 'big')
-
 def desc_bytes(bs):
     for b in bs:
-        print(f'{b:08b}',end=' ')
-    print()
+        print(f'\\x{b:02x}',end='')
 
 def name_of_class(clazz, index):
     return clazz['constant_pool'][clazz['constant_pool'][index]['name_index']]['value']
 
 def name_of_member(clazz, index):
     return clazz['constant_pool'][clazz['constant_pool'][index]['name_index']]['value']
+
 def type_of(obj):
     if obj['type'] == 'FakePrintStream':
-        print(obj)
         return 'java/io/PrintStream'
     else:
         assert False, f'{obj=} not supported.'
@@ -97,6 +90,7 @@ ldc = 0x12
 invokevirtual = 0xb6
 ret = 0xb1
 bipush = 0x10
+
 def execute_code(clazz, code):
     s = io.BytesIO(code)
     # \xb2\x00\x02
@@ -108,7 +102,6 @@ def execute_code(clazz, code):
         opcode = read_u1(s)
         if opcode == getstatic:
             index = read_u2(s)
-            print("index = ", name_of_class(clazz, at_pool(clazz,index)['name_and_type_index']))
             if name_of_class(clazz, at_pool(clazz,index)['class_index']) != 'java/lang/System':
                 assert False, "unsupported class of a field."
             if name_of_class(clazz, at_pool(clazz,index)['name_and_type_index']) != 'out':
@@ -122,16 +115,13 @@ def execute_code(clazz, code):
             index = read_u1(s)
             if  at_pool(clazz,index)['tag'] != CONSTANT_STRING:
                 assert False, f"{at_pool(clazz,index)['tag']} is not supported."
-            # print("ldc ",  at_pool(clazz,index))
             stack.append({'type':'Constant', 'value': at_pool(clazz,at_pool(clazz,index)['string_index'])['value']})
         elif opcode == invokevirtual:
             index = read_u2(s)
             method_name = name_of_class(clazz, at_pool(clazz,index)['name_and_type_index'])
-            print(f"{method_name=}")
             if method_name != 'println':
                 assert False, f"{method_name} is not supported."
             obj = stack[-2]
-            print(name_of_class(clazz, at_pool(clazz,index)['class_index']))
             if type_of(obj) != name_of_class(clazz, at_pool(clazz,index)['class_index']):
                 assert False, f'{obj} not supported.'
 
@@ -144,7 +134,6 @@ def execute_code(clazz, code):
 
 
 def execute_method(method):
-    print(at_pool(clazz, method['name_index']))
     s = io.BytesIO(method['attributes'][0]['bytes'])
     code = {}
     code['max_stacks'] = read_u2(s)
@@ -158,105 +147,86 @@ def execute_method(method):
     for i in range(0, code['attributes_count']):
         attribute = {}
         attribute['attribute_name_index'] = read_u2(s)
-        print(at_pool(clazz,attribute['attribute_name_index']))
         attribute['attribute_length'] = read_u4(s)
         attribute['bytes'] = read_bytes(s,attribute['attribute_length'])
         code['attributes'].append(attribute)
 
-    pp.pprint(code)
-    execute_code(clazz, code['bytes'])
-    print(code['bytes'])
-    # print(at_pool(clazz, 27))
+    # pp.pprint(method)
     # desc_bytes(code['bytes'])
+    execute_code(clazz, code['bytes'])
 
-
-
-with open("Demo.class",'rb') as f:
+def parse_class(filename:str) -> dict:
     clazz = {}
-    clazz['magic']= hex(int.from_bytes(f.read(4),'big'))
-    clazz['minor_version']= hex(int.from_bytes(f.read(2),'big'))
-    clazz['major_version'] = hex(int.from_bytes(f.read(2),'big'))
-    clazz['constant_pool_count'] = int.from_bytes(f.read(2),'big')
-    clazz["constant_pool"] = read_constant_pool(f, clazz)
-    clazz['access_flags'] = int.from_bytes(f.read(2),'big')
-    clazz['this_class'] = int.from_bytes(f.read(2),'big')
-    # print("class", clazz['constant_pool'][clazz['constant_pool'][clazz['this_class']]['name_index']])
+    with open(filename,'rb') as f:
+        clazz['magic']= hex(read_u4(f))
+        clazz['minor_version']= hex(read_u2(f))
+        clazz['major_version'] = hex(read_u2(f))
+        clazz['constant_pool_count'] = read_u2(f)
+        clazz["constant_pool"] = read_constant_pool(f, clazz)
+        clazz['access_flags'] = read_u2(f)
+        clazz['this_class'] = read_u2(f)
+        clazz['super_class'] = read_u2(f)
 
-    clazz['super_class'] = int.from_bytes(f.read(2),'big')
-    # print("class", clazz['constant_pool'][clazz['constant_pool'][clazz['super_class']]['name_index']])
+        clazz['interfaces_count'] = read_u2(f)
+        clazz['interfaces'] = []
+        for i in range(0, clazz['interfaces_count']):
+            clazz['interfaces'].append(read_u2(f))
 
-    clazz['interfaces_count'] = read_u2(f)
-    clazz['interfaces'] = []
-    for i in range(0, clazz['interfaces_count']):
-        clazz['interfaces'].append(int.from_bytes(f.read(2),'big'))
+        clazz['fields_count'] = read_u2(f)
+        clazz['fields ']= []
+        for i in range(0, clazz['fields_count']):
+            field = {}
+            field['access_flags'] = read_u2(f)
+            field['name_index'] = read_u2(f);
+            field['descriptor_index'] = read_u2(f);
+            field['attributes_count'] = read_u2(f);
+            attributes = []
+            field['attributes'] = attributes
+            for j in range(0, field['attributes_count']):
+                attribute = {}
+                attribute['attribute_name_index'] = read_u2(f)
+                attribute['attribute_length'] = read_u4(f)
+                attribute['bytes'] = read_bytes(f,attribute['attribute_length'])
+                attributes.append(attribute)
+            clazz['fields'].append(field)
 
-    clazz['fields_count'] = read_u2(f)
-    clazz['fields ']= []
-    for i in range(0, clazz['fields_count']):
-        field = {}
-        field['access_flags'] = read_u2(f)
-        field['name_index'] = read_u2(f);
-        field['descriptor_index'] = read_u2(f);
-        field['attributes_count'] = read_u2(f);
-        attributes = []
-        field['attributes'] = attributes
-        for j in range(0, field['attributes_count']):
+        clazz['methods_count'] = read_u2(f)
+
+        clazz['methods']= []
+        for i in range(0, clazz['methods_count']):
+            method = {}
+            method['access_flags'] = read_u2(f)
+            method['name_index'] = read_u2(f);
+            method['descriptor_index'] = read_u2(f);
+            method['attributes_count'] = read_u2(f);
+            attributes = []
+            for j in range(0, method['attributes_count']):
+                attribute = {}
+                attribute['attribute_name_index'] = read_u2(f)
+                attribute['attribute_length'] = read_u4(f)
+                attribute['bytes'] = read_bytes(f,attribute['attribute_length'])
+                attributes.append(attribute)
+            method['attributes'] = attributes
+            clazz['methods'].append(method)
+
+        clazz['attributes_count'] = read_u2(f);
+        clazz['attributes']= []
+        for j in range(0, clazz['attributes_count']):
             attribute = {}
             attribute['attribute_name_index'] = read_u2(f)
             attribute['attribute_length'] = read_u4(f)
             attribute['bytes'] = read_bytes(f,attribute['attribute_length'])
-            attributes.append(attribute)
-        clazz['fields'].append(field)
-
-    clazz['methods_count'] = read_u2(f)
-    # print("method count=", clazz['methods_count'])
-
-    clazz['methods']= []
-    for i in range(0, clazz['methods_count']):
-        method = {}
-        method['access_flags'] = read_u2(f)
-        method['name_index'] = read_u2(f);
-        # print("method name", clazz['constant_pool'][method['name_index']])
-        method['descriptor_index'] = read_u2(f);
-        method['attributes_count'] = read_u2(f);
-        attributes = []
-        for j in range(0, method['attributes_count']):
-            attribute = {}
-            attribute['attribute_name_index'] = read_u2(f)
-            attribute['attribute_length'] = read_u4(f)
-            attribute['bytes'] = read_bytes(f,attribute['attribute_length'])
-            attributes.append(attribute)
-        method['attributes'] = attributes
-        clazz['methods'].append(method)
-
-    clazz['attributes_count'] = read_u2(f);
-    clazz['attributes']= []
-    for j in range(0, clazz['attributes_count']):
-        attribute = {}
-        attribute['attribute_name_index'] = read_u2(f)
-        attribute['attribute_length'] = read_u4(f)
-        attribute['bytes'] = read_bytes(f,attribute['attribute_length'])
-        clazz['attributes'].append(attribute)
-    pp.pprint("---------------------")
-    pp.pprint(clazz)
-    # pp.pprint(at_pool(clazz, clazz['methods'][1]['descriptor_index']))
-    # pp.pprint(at_pool(clazz, clazz['methods'][1]['name_index']))
-    # pp.pprint(at_pool(clazz, clazz['methods'][1]['attributes'][0]['attribute_name_index']))
+            clazz['attributes'].append(attribute)
+    return clazz
 
 
 print("----------------execute methods---------------------")
 
-def find_method_by_name(clazz, name:str ):
+clazz = parse_class('./Demo.class')
+
+def find_method_by_name(clazz, name:str):
     for method in clazz['methods']:
         if clazz['constant_pool'][method['name_index']]['value'] == name:
             return method
 
-# for method in clazz['methods']:
-# print(find_method_by_name(clazz, 'main'))
-
-
-# execute_code(clazz, clazz['methods'][1]['attributes'][0]['bytes'])
 execute_method(find_method_by_name(clazz, 'main'))
-for method in clazz['methods']:
-    pass
-    # pp.pprint(at_pool(clazz, method['descriptor_index']))
