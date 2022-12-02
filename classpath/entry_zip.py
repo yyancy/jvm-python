@@ -11,9 +11,13 @@ class ZipEntry(Entry):
      
   def read_class(self, class_name: str) -> tuple[bytes,Entry, Err]:
     zip = zipfile.ZipFile(self.abs_path)
-    with zip.open(class_name) as f:
-      b = f.read()
-    return b, self, None
+    print(self.abs_path)
+    for file in zip.namelist():
+      if file == class_name:
+        with zip.open(class_name) as f:
+          b = f.read()
+          return b, self, None
+    return None, None, Err(f"class not found: {class_name}")
 
 
   def __str__(self) -> str:
