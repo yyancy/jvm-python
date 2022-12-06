@@ -229,4 +229,5 @@ def find_method_by_name(clazz, name:str):
         if clazz['constant_pool'][method['name_index']]['value'] == name:
             return method
 
+pp.pprint(at_pool(clazz, find_method_by_name(clazz, 'main')['attributes'][0]['attribute_name_index']))
 execute_method(find_method_by_name(clazz, 'main'))
