@@ -3,7 +3,7 @@ from classpath.new_entry import *
 import classpath.classpath as classpath
 import logging
 from classfile.class_file import *
-
+from objprint import op
 import pprint
 pp = pprint.PrettyPrinter(indent=4)
 logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
@@ -25,7 +25,7 @@ def start_jvm(cmd: Cmd):
   if e != None:
     raise e
   
-  pp.pprint(vars(cf))
+  op(cf)
   
 
 
