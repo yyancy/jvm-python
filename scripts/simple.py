@@ -63,7 +63,7 @@ def read_constant_pool(f, clazz):
             info["value"] = read_bytes(f, info["length"]).decode("utf-8")
             constant_pool.append(info)
         else:
-            raise Exception(f"to be implemented {tag}")
+            raise Exception(f"Unsupported constant pool entry: {tag=:x}")
     return constant_pool
 
 def at_pool(clazz,index):
@@ -222,7 +222,7 @@ def parse_class(filename:str) -> dict:
 
 print("----------------execute methods---------------------")
 
-clazz = parse_class('./Demo.class')
+clazz = parse_class('data/Demo.class')
 
 def find_method_by_name(clazz, name:str):
     for method in clazz['methods']:

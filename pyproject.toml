@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "jvm-python"
+version = "0.1.0"
+description = "A jvm implementation in python"
+authors = ["yancy <dongyang@wondertek.com.cn>"]
+readme = "README.md"
+packages = [{include = "jvm_python"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+objprint = "^0.2.2"
+
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^7.2.0"
+autopep8 = "^2.0.0"
+
+
+[tool.pytest.ini_options]
+pythonpath = [
+"."
+]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
