@@ -10,6 +10,12 @@ public class Demo {
         return i + j;
     }
 
+    public static float circumference(float r) {
+      float pi = 3.14f;
+      float area = 2 * pi * r;
+      return area;
+    }
+
     public static void main(String args[],int age){
         System.out.println("Hello, dongyang!");
         System.out.println(22 - 32);
