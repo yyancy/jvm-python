@@ -1,9 +1,6 @@
 from rtda.frame import Frame
 from abc import ABC, abstractmethod
-
-
-class BytecodeReader:
-  pass
+from byte_reader import BytecodeReader
 
 
 class Instruction(ABC):
@@ -36,6 +33,12 @@ class BranchInstuction(Instruction):
   def execute(self, frame: Frame):
     pass
 
+  def branch(self, frame: Frame, offset: int):
+      pc = frame.thread().pc()
+      next_pc = pc + offset
+      frame.set_next_pc(next_pc)
+
+
 class Index8Instuction(Instruction):
   def __init__(self) -> None:
     super().__init__()
@@ -43,6 +46,18 @@ class Index8Instuction(Instruction):
 
   def fetch_operands(self, reader: BytecodeReader):
     self.index = reader.read_uint8()
+
+  def execute(self, frame: Frame):
+    pass
+
+
+class Index16Instuction(Instruction):
+  def __init__(self) -> None:
+    super().__init__()
+    self.index: int
+
+  def fetch_operands(self, reader: BytecodeReader):
+    self.index = reader.read_uint16()
 
   def execute(self, frame: Frame):
     pass
