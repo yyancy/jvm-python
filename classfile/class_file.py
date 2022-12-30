@@ -125,6 +125,14 @@ class MemberInfo:
   def descriptor(self) -> str:
     return self.cp.get_utf8(self.descriptor_index)
 
+  def code_attribute(self) -> CodeAttributeInfo:
+    for info in self.attributes:
+      match info:
+        case CodeAttributeInfo():
+          return info
+
+    return None
+
 
 def read_members(reader: ClassReader, cp: ConstantPool) -> list[MemberInfo]:
   counts = reader.read_u16()

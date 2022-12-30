@@ -1,6 +1,7 @@
 
 from .frame import Frame
 
+
 class Stack:
   def __init__(self, max_size: int) -> None:
     self.max_size = max_size
@@ -48,3 +49,6 @@ class Thread:
 
   def current_frame(self,) -> Frame:
     return self.stack.top()
+
+  def new_frame(self, max_locals: int, max_stacks: int) -> Frame:
+    return Frame(self, max_locals, max_stacks)
