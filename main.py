@@ -1,5 +1,6 @@
 import logging
 import pprint
+import interperter
 
 from objprint import op
 
@@ -32,7 +33,17 @@ def start_jvm(cmd: Cmd):
 
   op(cf)
 
+  main_method = get_main_method(cf)
+  if main_method != None:
+    interperter.interpret(main_method)
+  else:
+    logging.warning(f"Main method not found in class {cmd.clazz}")
 
+def get_main_method(cf :ClassFile)-> MemberInfo:
+  for method in cf.methods:
+    if method.name() == "main" and method.descriptor() == "([Ljava/lang/String;)V":
+      return method
+  return None
 if __name__ == '__main__':
   cmd = parse_cmd()
   start_jvm(cmd)

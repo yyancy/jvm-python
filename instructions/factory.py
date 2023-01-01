@@ -6,6 +6,9 @@ from .loads import *
 from .stack import *
 from .stores import *
 from .maths import *
+from .conversions import *
+from .control import *
+from .extended import *
 import types
 
 single = types.SimpleNamespace()
@@ -158,14 +161,415 @@ single.dcmpg   = DCMPG()
 # single.monitorexit   = MONITOR_EXIT()
 # single.invoke_native = INVOKE_NATIVE()
 
-def new_instruction(opcode: int) -> Instruction:
+    
+def new_instruction(opcode :int) ->Instruction:
   match opcode:
     case 0x00:
-      return NOP()
+      return single.nop
     case 0x01:
-      return ACONST_NULL()
-    
+      return single.aconst_null
+    case 0x02:
+       return single.iconst_m1
+    case 0x03:
+      return single.iconst_0
+    case 0x04:
+      return single.iconst_1
+    case 0x05:
+      return single.iconst_2
+    case 0x06:
+      return single.iconst_3
+    case 0x07:
+      return single.iconst_4
+    case 0x08:
+      return single.lconst_-1
+    case 0x09:
+      return single.lconst_0
+    case 0x0a:
+      return single.fconst_-1
+    case 0x0b:
+      return single.fconst_0
+    case 0x0c:
+      return single.fconst_1
+    case 0x0d:
+      return single.dconst_1
+    case 0x0e:
+      return single.dconst_0
+    case 0x0f:
+        return single.dconst_1
+    case 0x10:
+      return BIPUSH()
+    case 0x11:
+      return SIPUSH()
+    # case 0x12:
+    # 	return &LDC{}
+    # case 0x13:
+    # 	return &LDC_W{}
+    # case 0x14:
+    # 	return &LDC1_W{}
+    case 0x15:
+      return ILOAD()
+    case 0x16:
+      return LLOAD()
+    case 0x17:
+      return FLOAD()
+    case 0x18:
+      return DLOAD()
+    case 0x19:
+      return ALOAD()
+    case 0x1a:
+      return single.iload_0
+    case 0x1b:
+      return single.iload_1
+    case 0x1c:
+      return single.iload_2
+    case 0x1d:
+      return single.iload_3
+    case 0x1e:
+      return single.lload_0
+    case 0x1f:
+      return single.lload_1
+    case 0x20:
+      return single.lload_2
+    case 0x21:
+      return single.lload_3
+    case 0x22:
+      return single.fload_0
+    case 0x23:
+      return single.fload_1
+    case 0x24:
+      return single.fload_2
+    case 0x25:
+      return single.fload_3
+    case 0x26:
+      return single.dload_0
+    case 0x27:
+      return single.dload_1
+    case 0x28:
+      return single.dload_2
+    case 0x29:
+      return single.dload_3
+    case 0x2a:
+      return single.aload_0
+    case 0x2b:
+      return single.aload_1
+    case 0x2c:
+      return single.aload_2
+    case 0x2d:
+      return single.aload_3
+    # case 0x2e:
+    # 	return iaload
+    # case 0x2f:
+    # 	return laload
+    # case 0x30:
+    # 	return faload
+    # case 0x31:
+    # 	return daload
+    # case 0x32:
+    # 	return aaload
+    # case 0x33:
+    # 	return baload
+    # case 0x34:
+    # 	return caload
+    # case 0x35:
+    # 	return saload
+    case 0x36:
+      return ISTORE()
+    case 0x37:
+      return LSTORE()
+    case 0x38:
+      return FSTORE()
+    case 0x39:
+      return DSTORE()
+    case 0x3a:
+      return ASTORE()
+    case 0x3b:
+      return single.istore_0
+    case 0x3c:
+      return single.istore_1
+    case 0x3d:
+      return single.istore_2
+    case 0x3e:
+      return single.istore_3
+    case 0x3f:
+      return single.lstore_0
+    case 0x40:
+      return single.lstore_1
+    case 0x41:
+      return single.lstore_2
+    case 0x42:
+      return single.lstore_3
+    case 0x43:
+      return single.fstore_0
+    case 0x44:
+      return single.fstore_1
+    case 0x45:
+      return single.fstore_2
+    case 0x46:
+      return single.fstore_3
+    case 0x47:
+      return single.dstore_0
+    case 0x48:
+      return single.dstore_1
+    case 0x49:
+      return single.dstore_2
+    case 0x4a:
+      return single.dstore_3
+    case 0x4b:
+      return single.astore_0
+    case 0x4c:
+      return single.astore_1
+    case 0x4d:
+      return single.astore_2
+    case 0x4e:
+      return single.astore_3
+    # case 0x4f:
+    # 	return iastore
+    # case 0x50:
+    # 	return lastore
+    # case 0x51:
+    # 	return fastore
+    # case 0x52:
+    # 	return dastore
+    # case 0x53:
+    # 	return aastore
+    # case 0x54:
+    # 	return bastore
+    # case 0x55:
+    # 	return castore
+    # case 0x56:
+    # 	return sastore
+    case 0x57:
+      return pop
+    case 0x58:
+      return single.pop2
+    case 0x59:
+      return dup
+    case 0x5a:
+      return single.dup_x1
+    case 0x5b:
+      return single.dup_x2
+    case 0x5c:
+      return single.dup2
+    case 0x5d:
+      return single.dup2_x1
+    case 0x5e:
+      return single.dup2_x2
+    case 0x5f:
+      return swap
+    case 0x60:
+      return single.iadd
+    case 0x61:
+      return single.ladd
+    case 0x62:
+      return single.fadd
+    case 0x63:
+      return single.dadd
+    case 0x64:
+      return single.isub
+    case 0x65:
+      return single.lsub
+    case 0x66:
+      return single.fsub
+    case 0x67:
+      return single.dsub
+    case 0x68:
+      return single.imul
+    case 0x69:
+      return single.lmul
+    case 0x6a:
+      return single.fmul
+    case 0x6b:
+      return single.dmul
+    case 0x6c:
+      return single.idiv
+    case 0x6d:
+      return single.ldiv
+    case 0x6e:
+      return single.fdiv
+    case 0x6f:
+      return single.ddiv
+    case 0x70:
+      return single.irem
+    case 0x71:
+      return single.lrem
+    case 0x72:
+      return single.frem
+    case 0x73:
+      return single.drem
+    case 0x74:
+      return single.ineg
+    case 0x75:
+      return single.lneg
+    case 0x76:
+      return single.fneg
+    case 0x77:
+      return single.dneg
+    case 0x78:
+      return single.ishl
+    case 0x79:
+      return single.lshl
+    case 0x7a:
+      return single.ishr
+    case 0x7b:
+      return single.lshr
+    case 0x7c:
+      return single.iushr
+    case 0x7d:
+      return single.lushr
+    case 0x7e:
+      return single.iand
+    case 0x7f:
+      return single.land
+    case 0x80:
+      return single.ior
+    case 0x81:
+      return single.lor
+    case 0x82:
+      return single.ixor
+    case 0x83:
+      return single.lxor
+    case 0x84:
+      return IINC()
+    case 0x85:
+      return single.i2l
+    case 0x86:
+      return single.i2f
+    case 0x87:
+      return single.i2d
+    case 0x88:
+      return single.l2i
+    case 0x89:
+      return single.l2f
+    case 0x8a:
+      return single.l2d
+    case 0x8b:
+      return single.f2i
+    case 0x8c:
+      return single.f2l
+    case 0x8d:
+      return single.f2d
+    case 0x8e:
+      return single.d2i
+    case 0x8f:
+      return single.d2l
+    case 0x90:
+      return single.d2f
+    case 0x91:
+      return single.i2b
+    case 0x92:
+      return single.i2c
+    case 0x93:
+      return single.i2s
+    case 0x94:
+      return lcmp
+    case 0x95:
+      return single.fcmpl
+    case 0x96:
+      return single.fcmpg
+    case 0x97:
+      return single.dcmpl
+    case 0x98:
+      return single.dcmpg
+    case 0x99:
+      return IFEQ()
+    case 0x9a:
+      return IFNE()
+    case 0x9b:
+      return IFLT()
+    case 0x9c:
+      return IFGE()
+    case 0x9d:
+      return IFGT()
+    case 0x9e:
+      return IFLE()
+    case 0x9f:
+      return IF_ICMPEQ()
+    case 0xa0:
+      return IF_ICMPNE()
+    case 0xa1:
+      return IF_ICMPLT()
+    case 0xa2:
+      return IF_ICMPGE()
+    case 0xa3:
+      return IF_ICMPGT()
+    case 0xa4:
+      return IF_ICMPLE()
+    case 0xa5:
+      return IF_ACMPEQ()
+    case 0xa6:
+      return IF_ACMPNE()
+    case 0xa7:
+      return GOTO()
+    # case 0xa8:
+    # 	return &JSR{}
+    # case 0xa9:
+    # 	return &RET{}
+    case 0xaa:
+      return TABLE_SWITCH()
+    case 0xab:
+      return LOOKUP_SWITCH()
+    # case 0xac:
+    # 	return ireturn
+    # case 0xad:
+    # 	return lreturn
+    # case 0xae:
+    # 	return freturn
+    # case 0xaf:
+    # 	return dreturn
+    # case 0xb0:
+    # 	return areturn
+    # case 0xb1:
+    # 	return _return
+    #	case 0xb2:
+    #		return &GET_STATIC{}
+    # case 0xb3:
+    # 	return &PUT_STATIC{}
+    # case 0xb4:
+    # 	return &GET_FIELD{}
+    # case 0xb5:
+    # 	return &PUT_FIELD{}
+    #	case 0xb6:
+    #		return &INVOKE_VIRTUAL{}
+    # case 0xb7:
+    # 	return &INVOKE_SPECIAL{}
+    # case 0xb8:
+    # 	return &INVOKE_STATIC{}
+    # case 0xb9:
+    # 	return &INVOKE_INTERFACE{}
+    # case 0xba:
+    # 	return &INVOKE_DYNAMIC{}
+    # case 0xbb:
+    # 	return &NEW{}
+    # case 0xbc:
+    # 	return &NEW_ARRAY{}
+    # case 0xbd:
+    # 	return &ANEW_ARRAY{}
+    # case 0xbe:
+    # 	return arraylength
+    # case 0xbf:
+    # 	return athrow
+    # case 0xc0:
+    # 	return &CHECK_CAST{}
+    # case 0xc1:
+    # 	return &INSTANCE_OF{}
+    # case 0xc2:
+    # 	return monitorenter
+    # case 0xc3:
+    # 	return monitorexit
+    case 0xc4:
+      return WIDE()
+    # case 0xc5:
+    # 	return &MULTI_ANEW_ARRAY{}
+    case 0xc6:
+      return IFNULL()
+    case 0xc7:
+      return IFNONNULL()
+    case 0xc8:
+      return GOTO_W()
+    # case 0xc9:
+    # 	return &JSR_W{}
+    # case 0xca: breakpoint
+    # case 0xfe: impdep1
+    # case 0xff: impdep2
     case _:
       assert False, f'Unsupported opcode: {opcode:x}'
-    
-

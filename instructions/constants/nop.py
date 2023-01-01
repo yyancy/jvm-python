@@ -1,4 +1,4 @@
-from base.instruction import NoOperandsInstuction
+from ..base.instruction import NoOperandsInstuction
 
 
 class NOP(NoOperandsInstuction):

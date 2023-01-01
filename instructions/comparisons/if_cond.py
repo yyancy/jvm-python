@@ -1,4 +1,4 @@
-from base.instruction import *
+from ..base.instruction import *
 from common.cons import *
 from rtda.frame import Frame
 
@@ -7,17 +7,39 @@ class IFEQ(BranchInstuction):
   def execute(self, frame: Frame):
     val = frame.operand_stack.pop_int()
     if val == 0:
-      super.bra
+      self.branch(frame, self.offset)
+
+
 class IFNE(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    val = frame.operand_stack.pop_int()
+    if val != 0:
+      self.branch(frame, self.offset)
+
+
 class IFLT(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    val = frame.operand_stack.pop_int()
+    if val < 0:
+      self.branch(frame, self.offset)
+
+
 class IFLE(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    val = frame.operand_stack.pop_int()
+    if val <= 0:
+      self.branch(frame, self.offset)
+
+
 class IFGT(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    val = frame.operand_stack.pop_int()
+    if val > 0:
+      self.branch(frame, self.offset)
+
+
 class IFGE(BranchInstuction):
-  pass
-
-
-assert False, f'to be implemented'
+  def execute(self, frame: Frame):
+    val = frame.operand_stack.pop_int()
+    if val >= 0:
+      self.branch(frame, self.offset)

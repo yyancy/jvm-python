@@ -17,7 +17,7 @@ class DirEntry(Entry):
     except Exception as e:
         logging.error(f"could not find class: {e}")
         return None, None, e
-    return b, self, e
+    return b, self, None
 
 
   def __str__(self) -> str:

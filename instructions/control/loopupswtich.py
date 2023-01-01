@@ -1,10 +1,10 @@
-from base.instruction import *
+from ..base.instruction import *
 
 from common.cons import *
 from rtda.frame import Frame
 
 
-class LOOPUP_SWITCH(BranchInstuction):
+class LOOKUP_SWITCH(BranchInstuction):
   def fetch_operands(self, reader: BytecodeReader):
     reader.skip_padding()
     self.default_offset = reader.read_u32()

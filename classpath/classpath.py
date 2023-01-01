@@ -39,7 +39,7 @@ class Classpath:
         self.user_classpath = new_entry(cp_option)
 
 def get_jre_dir(jre_option:str) -> str:
-    if jre_option!="" and exists(jre_option):
+    if jre_option and exists(jre_option):
         return jre_option
 
     cur = os.path.join(',','jre')

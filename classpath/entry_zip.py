@@ -2,6 +2,7 @@ from .entry import Entry
 from .entry import Err
 import zipfile
 import os.path
+import logging
 
 class ZipEntry(Entry):
   def __init__(self, path:str) -> None:
@@ -11,7 +12,7 @@ class ZipEntry(Entry):
      
   def read_class(self, class_name: str) -> tuple[bytes,Entry, Err]:
     zip = zipfile.ZipFile(self.abs_path)
-    print(self.abs_path)
+    logging.info(f"{self.abs_path=}")
     for file in zip.namelist():
       if file == class_name:
         with zip.open(class_name) as f:

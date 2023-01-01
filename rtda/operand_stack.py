@@ -7,11 +7,13 @@ class OperandStack:
     self.size: int = 0
     self.slots: list[Slot] = None
     if max_stack > 0:
+      # print(f"max stack = {max_stack}")
       self.slots = [None] * max_stack
 
   def push_int(self, val: int):
     slot = Slot()
     slot.num = val
+    # print(f"{self.size=} len {len(self.slots)}")
     self.slots[self.size] = slot
     self.size += 1
 

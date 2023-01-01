@@ -1,5 +1,5 @@
 
-from base.instruction import NoOperandsInstuction
+from ..base.instruction import NoOperandsInstuction
 from rtda.frame import Frame
 
 

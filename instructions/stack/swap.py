@@ -1,5 +1,5 @@
 
-from base.instruction import *
+from ..base.instruction import *
 from rtda.frame import Frame
 
 

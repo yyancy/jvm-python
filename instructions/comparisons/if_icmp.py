@@ -1,33 +1,53 @@
-from base.instruction import *
+from ..base.instruction import *
 from common.cons import *
 from rtda.frame import Frame
 
 
 class IF_ICMPEQ(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    v1, v2 = pop(frame)
+    if v1 == v2:
+      self.branch(frame, self.offset)
 
 
 class IF_ICMPNE(BranchInstuction):
   def execute(self, frame: Frame):
-    stack = frame.operand_stack
-    v2 = stack.pop_int()
-    v1 = stack.pop_int()
+    v1, v2 = pop(frame)
     if v1 != v2:
-      super().branch(frame, self.offset)
-
+      self.branch(frame, self.offset)
 
 
 class IF_ICMPLT(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    v1, v2 = pop(frame)
+    if v1 < v2:
+      self.branch(frame, self.offset)
 
 
 class IF_ICMPLE(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    v1, v2 = pop(frame)
+    if v1 <= v2:
+      self.branch(frame, self.offset)
 
 
 class IF_ICMPGT(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    v1, v2 = pop(frame)
+    if v1 > v2:
+      self.branch(frame, self.offset)
 
 
 class IF_ICMPGE(BranchInstuction):
-  pass
+  def execute(self, frame: Frame):
+    v1, v2 = pop(frame)
+    # print(f"v1 = {v1} v2 = {v2} offset={self.offset}")
+    if v1 >= v2:
+      self.branch(frame, self.offset)
+
+
+def pop(frame: Frame) -> tuple[int, int]:
+  stack = frame.operand_stack
+  v2 = stack.pop_int()
+  v1 = stack.pop_int()
+  return [v1, v2]

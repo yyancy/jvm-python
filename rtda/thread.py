@@ -6,7 +6,7 @@ class Stack:
   def __init__(self, max_size: int) -> None:
     self.max_size = max_size
     self.size = 0
-    self._top: Frame
+    self._top: Frame = None
 
   def push(self, frame: Frame):
     if self.size > self.max_size:
@@ -37,7 +37,6 @@ class Thread:
     self.pc: int
     self.stack: Stack = Stack(1024)
 
-  @property.setter
   def set_pc(self, v: int) -> None:
     self.pc = v
 

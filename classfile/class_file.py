@@ -120,10 +120,10 @@ class MemberInfo:
     self.attributes: list[AttributeInfo]
 
   def name(self) -> str:
-    return self.cp.get_utf8(self.name_index)
+    return self.__cp.get_utf8(self.name_index)
 
   def descriptor(self) -> str:
-    return self.cp.get_utf8(self.descriptor_index)
+    return self.__cp.get_utf8(self.descriptor_index)
 
   def code_attribute(self) -> CodeAttributeInfo:
     for info in self.attributes:

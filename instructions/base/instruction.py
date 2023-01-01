@@ -1,6 +1,6 @@
 from rtda.frame import Frame
 from abc import ABC, abstractmethod
-from byte_reader import BytecodeReader
+from .byte_reader import BytecodeReader
 
 
 class Instruction(ABC):
@@ -28,13 +28,11 @@ class BranchInstuction(Instruction):
     self.offset: int
 
   def fetch_operands(self, reader: BytecodeReader):
-    self.offset = reader.read_uint16()
+    self.offset = reader.read_s16()
 
-  def execute(self, frame: Frame):
-    pass
 
   def branch(self, frame: Frame, offset: int):
-      pc = frame.thread().pc()
+      pc = frame.thread.pc
       next_pc = pc + offset
       frame.set_next_pc(next_pc)
 
