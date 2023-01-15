@@ -8,7 +8,7 @@ in windows
 
 ## Chapter 5 test
 ### On Linux
-`python3 main.py -jre /usr/lib/jvm/java-8-openjdk-amd64/jre  GaussTest`
+`python3 main.py -jre /usr/lib/jvm/java-8-openjdk-amd64/jre  data/GaussTest`
 ### Expected result
 ```bash
 <LocalVars 0x7efd546146d0

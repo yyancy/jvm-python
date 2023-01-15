@@ -120,9 +120,13 @@ class StringConstantInfo(ConstantInfo):
 
   def read_info(self, reader: ClassReader) -> None:
     self.string_index = reader.read_u16()
+  
+  def string(self)-> str:
+    self.__cp.get_utf8(self.string_index)
 
 
-class CommonConstantInfo(ConstantInfo):
+
+class MemberrefConstantInfo(ConstantInfo):
   def __init__(self, tag: int, cp: ConstantPool) -> None:
     super().__init__(tag, cp)
     self.class_index: uint16
@@ -132,36 +136,32 @@ class CommonConstantInfo(ConstantInfo):
     self.class_index = reader.read_u16()
     self.name_and_type_index = reader.read_u16()
   
+  def class_name(self)-> str:
+    return self.__cp.get_class_name(self.class_index)
+  
+  def name_and_descriptor(self)-> tuple[str, str]:
+    return self.__cp.get_name_and_type(self.name_and_type_index)
+  
 
 
-class InterfaceMethodrefConstantInfo(ConstantInfo):
+
+class InterfaceMethodrefConstantInfo(MemberrefConstantInfo):
   def __init__(self, tag: int, cp: ConstantPool) -> None:
     super().__init__(tag, cp)
-    self.info: ConstantInfo = CommonConstantInfo(tag, cp)
-
-  def read_info(self, reader: ClassReader) -> None:
-    self.info.read_info(reader)
+    # self.info: ConstantInfo = CommonConstantInfo(tag, cp)
 
 
-class MethodrefConstantInfo(ConstantInfo):
+class MethodrefConstantInfo(MemberrefConstantInfo):
   def __init__(self, tag: int, cp: ConstantPool) -> None:
     super().__init__(tag, cp)
-    self.info: ConstantInfo = CommonConstantInfo(tag, cp)
-
-  def read_info(self, reader: ClassReader) -> None:
-    self.info.read_info(reader)
   
   def __str__(self) -> str:
     return str(self.info)
 
 
-class FieldrefConstantInfo(ConstantInfo):
+class FieldrefConstantInfo(MemberrefConstantInfo):
   def __init__(self, tag: int, cp: ConstantPool) -> None:
     super().__init__(tag, cp)
-    self.info: ConstantInfo = CommonConstantInfo(tag, cp)
-
-  def read_info(self, reader: ClassReader) -> None:
-    self.info.read_info(reader)
 
 
 class ClassConstantInfo(ConstantInfo):
@@ -171,3 +171,6 @@ class ClassConstantInfo(ConstantInfo):
 
   def read_info(self, reader: ClassReader) -> None:
     self.name_index = reader.read_u16()
+  
+  def name(self)->str:
+    return self.__cp.get_utf8(self.name_index)

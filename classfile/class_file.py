@@ -63,10 +63,10 @@ class LineNumberTableAttrInfo(AttributeInfo):
 class ConstantValueAttributeInfo(AttributeInfo):
   def __init__(self, name_index: uint16, length: uint32, cp: ConstantPool) -> None:
     super().__init__(name_index, length, cp)
-    self.constantvalue_index: uint16
+    self.constant_value_index: uint16
 
   def read_info(self, reader: ClassReader) -> None:
-    self.constantvalue_index = reader.read_u16()
+    self.constant_value_index = reader.read_u16()
 
 
 class SourceFileAttributeInfo(AttributeInfo):
@@ -131,6 +131,13 @@ class MemberInfo:
         case CodeAttributeInfo():
           return info
 
+    return None
+  def constant_value_attribute(self)-> ConstantValueAttributeInfo:
+    for attr_info in self.attributes:
+      match attr_info:
+        case ConstantValueAttributeInfo():
+          return attr_info 
+    
     return None
 
 
@@ -236,13 +243,13 @@ class ClassFile:
         f"Unsupport class file version: {self.minor_version=} {self.major_version}")
 
   def class_name(self, ) -> str:
-    pass
+      assert False, f'to be implemented'
 
   def super_class_name(self, ) -> str:
-    pass
+    assert False, f'to be implemented'
 
   def interface_names(self) -> list[str]:
-    pass
+    assert False, f'to be implemented'
 
 
 def parse(class_data: bytes) -> tuple[ClassFile, Err]:

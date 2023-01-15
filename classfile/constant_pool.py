@@ -22,8 +22,10 @@ cp_type.CONSTANT_INVOKE_DYNAMIC: int = 18
 class ConstantPool:
   def __init__(self) -> None:
     self.infos: list[ConstantInfo] = [None]
-  
 
+  def __len__(self):
+    return len(self.infos) 
+  
 
   def append(self, info: ConstantInfo) -> None:
     self.infos.append(info)

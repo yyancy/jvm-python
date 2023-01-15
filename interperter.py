@@ -10,6 +10,7 @@ import instructions.factory as factory
 
 from objprint import op
 
+
 def interpret(methodinfo: classfile.MemberInfo):
   code_attr = methodinfo.code_attribute()
   max_locals = code_attr.max_locals
@@ -23,10 +24,12 @@ def interpret(methodinfo: classfile.MemberInfo):
   except Exception as e:
     catch_err(e, frame)
 
-def catch_err(e: Exception, frame:Frame):
+
+def catch_err(e: Exception, frame: Frame):
   op(frame.local_vars)
   op(frame.operand_stack)
   logging.error(e)
+
 
 def loop(thread: rtda.thread.Thread, bytecode: bytes):
   frame = thread.pop_frame()
