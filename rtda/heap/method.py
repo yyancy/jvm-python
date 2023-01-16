@@ -5,8 +5,8 @@ import cls
 
 import access_flag
 from ...classfile.class_file import *
-from ...classfile.constant_info import *
-from ...classfile.constant_pool import *
+# from ...classfile.constant_info import *
+# from ...classfile.constant_pool import *
 from ...common.cons import *
 
 

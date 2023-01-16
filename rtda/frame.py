@@ -9,6 +9,7 @@ class Frame:
     self.local_vars = LocalVars(max_locals)
     self.operand_stack = OperandStack(max_stack)
     self.thread= thread
+    
     self.next_pc: int = 0
 
   def set_next_pc(self, pc: int) -> None:
