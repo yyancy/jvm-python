@@ -1,4 +1,4 @@
-from classfile.class_file import *
+from ..classfile.class_file import *
 from objprint import op
 
 

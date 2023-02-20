@@ -1,4 +1,4 @@
-from rtda.frame import *
+from jvm.rtda.frame import *
 
 def test_frame():
   frame = Frame(100,100)
