@@ -1,4 +1,5 @@
 
+import logging
 from ..base.instruction import *
 
 from jvm.common.cons import *
@@ -10,6 +11,7 @@ class LCMP(NoOperandsInstuction):
     stack = frame.operand_stack
     v2 = stack.pop_long()
     v1 = stack.pop_long()
+    # logging.info(f'{v1=} {v2=}')
     if v1 > v2:
       stack.push_int(1)
     elif v1 == v2:

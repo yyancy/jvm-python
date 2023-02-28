@@ -14,14 +14,16 @@ from parse import *
 from jvm.rtda.frame import *
 
 pp = pprint.PrettyPrinter(indent=4)
-logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
-                    datefmt='%Y-%m-%d:%H:%M:%S',
+# logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
+#                     datefmt='%Y-%m-%d:%H:%M:%S',
+#                     level=logging.INFO)
+logging.basicConfig(format='%(levelname)-2s [%(filename)s:%(lineno)d] %(message)s',
                     level=logging.INFO)
 
 
 def start_jvm(cmd: Cmd):
   cp = classpath.parse(cmd.XjreOption, cmd.cpOption)
-  class_loader = loader.ClassLoader(cp)
+  class_loader = loader.ClassLoader(cp, cmd.verboseClassFlag)
   print(f"classpath: [{cp}] class: [{cmd.clazz}] args: [{cmd.args}]")
   class_name = cmd.clazz.replace('.', '/', -1)
   main_class = class_loader.load_class(class_name)
@@ -40,7 +42,7 @@ def start_jvm(cmd: Cmd):
 
   # main_method = get_main_method(cf)
   if main_method != None:
-    interperter.interpret(main_method)
+    interperter.interpret(main_method, cmd.verboseInstFlag)
   else:
     logging.warning(f"Main method not found in class {cmd.clazz}")
 

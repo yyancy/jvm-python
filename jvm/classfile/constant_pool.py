@@ -1,4 +1,5 @@
 from __future__ import annotations
+import logging
 from .constant_info import *
 from jvm.common.cons import *
 import types
@@ -106,10 +107,13 @@ def read_constant_pool(reader: ClassReader) -> ConstantPool:
   counts = reader.read_u16()
   # print(f'-------------constant pool size = {counts}-----------------')
   cp = ConstantPool()
-  for i in range(1, counts):
+  i = 1
+  while i < counts:
     ci = read_constant_info(reader,cp)
     cp.append(ci)
-    if isinstance(cp, (LongConstantInfo, DoubleConstantInfo)):  # 占用2个index
+    if isinstance(ci, (LongConstantInfo, DoubleConstantInfo)):  # 占用2个index
       cp.append(None)
+      i += 1
+    i += 1
 
   return cp

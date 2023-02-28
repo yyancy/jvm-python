@@ -76,3 +76,6 @@ class OperandStack:
     self.size -= 1
     logging.debug(f'pop ref = {self.size=}')
     return self.slots[self.size]
+
+  def get_ref_from_top(self, i: int)-> object:
+    return self.slots[self.size - i -1].ref

@@ -11,6 +11,7 @@ from .class_loader import ClassLoader
 from .field import *
 from .object import Object
 from .slots import *
+from jvm.rtda.heap.constant_pool import new_constant_pool, ConstantPool
 
 
 from .constant_pool import *
@@ -31,6 +32,7 @@ class Class:
 
   def __init__(self, cf: ClassFile) -> None:
     self.access_flags = cf.access_flags
+    self.init_started:bool = False
     self.name = cf.class_name()
     self.super_class_name = cf.super_class_name()
     self.interface_names = cf.interface_names()
@@ -40,6 +42,12 @@ class Class:
     self.fields = new_fields(self, cf.fields)
     self.methods = method.new_methods(self, cf.methods)
     self.super_class = None
+  
+  def start_init(self):
+    self.init_started = True
+  
+  def get_clinit_method(self)->Method:
+    return self.get_static_method('<clinit>', '()V') 
 
   def is_public(self) -> bool:
     return 0 != self.access_flags & ACC_PUBLIC
@@ -60,6 +68,8 @@ class Class:
         return True
       c = c.super_class
     return False
+  def is_superclass_of(self, other:Class)->bool:
+    return other.is_subclass_of(self)
 
   def is_implements(self, iface: Class) -> bool:
     c = self

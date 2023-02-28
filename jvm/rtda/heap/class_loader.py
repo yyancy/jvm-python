@@ -11,9 +11,10 @@ class ClassLoader:
   cp: classpath.Classpath
   class_map: dict[str, cls.Class]
 
-  def __init__(self, cp: classpath.Classpath) -> None:
+  def __init__(self, cp: classpath.Classpath, verbose_flag:bool) -> None:
     self.cp = cp
     self.class_map = dict()
+    self.verbose_flag = verbose_flag
 
   def load_class(self, name: str) -> cls.Class:
     clz = self.class_map.get(name)
@@ -40,7 +41,8 @@ class ClassLoader:
     data, entry = self.read_class(name)
     clazz = self.define_class(data)
     link(clazz)
-    logging.info(f"Loaded {name} from {entry} constant pool {clazz.constant_pool}")
+    if self.verbose_flag:
+      logging.info(f"Loaded {name} from {entry} constant pool {clazz.constant_pool}")
 
     return clazz
 

@@ -1,4 +1,5 @@
 
+from jvm.instructions.base import class_init_logic
 from ..base.instruction import *
 
 from jvm.rtda.frame import Frame
@@ -17,6 +18,10 @@ class GET_STATIC(Index16Instuction):
     logging.debug(f'{field_ref.name}')
     field = field_ref.resolved_field()
     clazz = field.clazz
+    if not clazz.init_started:
+      frame.revert_next_pc()
+      class_init_logic.init_class(frame.thread, clazz)
+      return
 
     if not field.is_static():
       raise SystemExit('java.lang.IncompatibleClassChangeError')

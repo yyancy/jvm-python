@@ -10,7 +10,8 @@ from ...common.cons import *
 
 
 class Constant:
-  pass
+  def __init__(self) -> None:
+    self.value = None
 
 
 class ConstantPool:
@@ -55,7 +56,8 @@ def new_interface_method_ref(rt_cp: ConstantPool, class_info: ConstantInfo):
 def new_constant_pool(clazz: cls.Class, cf_cp: cf_ConstantPool) -> ConstantPool:
   consts = [Constant() for _ in range(len(cf_cp))]
   rt_cp = ConstantPool(clazz, consts)
-  for i in range(len(cf_cp)):
+  i = 1
+  while i< len(cf_cp):
     cp_info = cf_cp.get_constant_info(i)
     match cp_info:
       case IntegerConstantInfo() as int_info:
@@ -63,6 +65,7 @@ def new_constant_pool(clazz: cls.Class, cf_cp: cf_ConstantPool) -> ConstantPool:
       case FloatConstantInfo() as float_info:
         consts[i] = float_info.value
       case LongConstantInfo() as long_info:
+        print('should coming --------------------------')
         consts[i] = long_info.value
         i += 1  # accoupy 2 spaces
       case DoubleConstantInfo() as double_info:
@@ -81,4 +84,5 @@ def new_constant_pool(clazz: cls.Class, cf_cp: cf_ConstantPool) -> ConstantPool:
 
       case InterfaceMethodrefConstantInfo() as methodref_info:
         consts[i] = new_interface_method_ref(rt_cp, methodref_info)
+    i+=1
   return rt_cp

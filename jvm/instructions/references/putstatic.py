@@ -1,3 +1,4 @@
+from jvm.instructions.base import class_init_logic
 from ..base.instruction import *
 
 from jvm.rtda.frame import Frame
@@ -15,6 +16,10 @@ class PUT_STATIC(Index16Instuction):
     field_ref: FieldRef = cp.get_constant(self.index)
     field = field_ref.resolved_field()
     clazz = field.clazz
+    if not clazz.init_started:
+      frame.revert_next_pc()
+      class_init_logic.init_class(frame.thread, clazz)
+      return
 
     if not field.is_static():
       raise SystemExit('java.lang.IncompatibleClassChangeError')

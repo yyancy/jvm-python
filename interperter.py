@@ -12,42 +12,60 @@ import jvm.instructions.factory as factory
 from objprint import op
 
 
-def interpret(method: Method):
+def interpret(method: Method, log_inst: bool):
   thread = jvm.rtda.thread.Thread()
   frame = thread.new_frame(method)
   thread.push_frame(frame)
   try:
-    loop(thread, method.code)
+    loop(thread,log_inst)
   except Exception as e:
-    catch_err(e, frame)
+    catch_err(e, frame, thread)
 
 
-def catch_err(e: Exception, frame: Frame):
+def catch_err(e: Exception, frame: Frame, thread: jvm.rtda.thread.Thread):
   # op(frame.local_vars)
   # op(frame.operand_stack)
-  logging.error(e)
+  log_frames(thread)
   raise e
 
+def log_frames(thread: jvm.rtda.thread.Thread):
+  while not thread.is_stack_empty():
+    frame = thread.pop_frame()
+    method = frame.method
+    class_name = method.clazz.name
+    print(f'>> pc:{frame.next_pc} {class_name=} {method.name=} {method.descriptor=}')
 
-def loop(thread: jvm.rtda.thread.Thread, bytecode: bytes):
-  frame = thread.pop_frame()
+def log_instruction(frame: Frame, inst: instruction.Instruction):
+    method = frame.method
+    class_name = method.clazz.name
+    method_name = method.name
+    pc = frame.thread.pc
+    print(f'{class_name=} {method_name=} {pc=} {inst=}')
+    
+
+def loop(thread: jvm.rtda.thread.Thread,log_inst:bool):
   reader = BytecodeReader()
   # logging.info(f"{bytecode=}")
   while True:
+    frame = thread.current_frame()
     pc = frame.next_pc
     thread.set_pc(pc)
     # decode
-    reader.reset(bytecode, pc)
+    reader.reset(frame.method.code, pc)
     opcode = reader.read_u8()
     inst: instruction.Instruction = factory.new_instruction(opcode)
 
-    logging.info(f"{opcode=:0x} {pc=} {inst=}")
+    # logging.info(f"{opcode=:0x} {pc=} {inst=}")
     # logging.info(frame.local_vars.slots)
     # logging.info(f'{frame.operand_stack.slots} {frame.operand_stack.size}')
 
     inst.fetch_operands(reader)
     frame.set_next_pc(reader.pc)
+    if (log_inst):
+        log_instruction(frame, inst)
 
     # execute
     inst.execute(frame)
+    if thread.is_stack_empty():
+      break
     # time.sleep(1)

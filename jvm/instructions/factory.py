@@ -1,9 +1,14 @@
+from jvm.instructions.control.mreturn import ARETURN, DRETURN, FRETURN, IRETURN, LRETURN, RETURN
+from jvm.instructions.references.invokeinterface import INVOKE_INTERFACE
+from jvm.instructions.references.invokestatic import INVOKE_STATIC
+from jvm.instructions.stack.pop import POP, POP2
+from jvm.instructions.stack.dup import DUP,DUP2, DUP2_X1,DUP2_X2,DUP_X1,DUP_X2
+from jvm.instructions.stack.swap import SWAP
 from . import *
 from .base import *
 from .comparisons import *
 from .constants import *
 from .loads import *
-from .stack import *
 from .stores import *
 from .maths import *
 from .conversions import *
@@ -150,12 +155,12 @@ single.fcmpl   = FCMPL()
 single.fcmpg   = FCMPG()
 single.dcmpl   = DCMPL()
 single.dcmpg   = DCMPG()
-# single.ireturn = IRETURN()
-# single.lreturn = LRETURN()
-# single.freturn = FRETURN()
-# single.dreturn = DRETURN()
-# single.areturn = ARETURN()
-# single._return = RETURN()
+single.ireturn = IRETURN()
+single.lreturn = LRETURN()
+single.freturn = FRETURN()
+single.dreturn = DRETURN()
+single.areturn = ARETURN()
+single._return = RETURN()
 # single.arraylength   = ARRAY_LENGTH()
 # single.athrow        = ATHROW()
 # single.monitorenter  = MONITOR_ENTER()
@@ -182,17 +187,17 @@ def new_instruction(opcode :int) ->Instruction:
     case 0x07:
       return single.iconst_4
     case 0x08:
-      return single.lconst_-1
+      return single.iconst_5
     case 0x09:
       return single.lconst_0
     case 0x0a:
-      return single.fconst_-1
+      return single.lconst_1
     case 0x0b:
       return single.fconst_0
     case 0x0c:
       return single.fconst_1
     case 0x0d:
-      return single.dconst_1
+      return single.fconst_2
     case 0x0e:
       return single.dconst_0
     case 0x0f:
@@ -340,7 +345,7 @@ def new_instruction(opcode :int) ->Instruction:
     # case 0x56:
     # 	return sastore
     case 0x57:
-      return pop
+      return single.pop
     case 0x58:
       return single.pop2
     case 0x59:
@@ -356,7 +361,7 @@ def new_instruction(opcode :int) ->Instruction:
     case 0x5e:
       return single.dup2_x2
     case 0x5f:
-      return swap
+      return single.swap
     case 0x60:
       return single.iadd
     case 0x61:
@@ -462,7 +467,7 @@ def new_instruction(opcode :int) ->Instruction:
     case 0x93:
       return single.i2s
     case 0x94:
-      return lcmp
+      return single.lcmp
     case 0x95:
       return single.fcmpl
     case 0x96:
@@ -509,18 +514,18 @@ def new_instruction(opcode :int) ->Instruction:
       return TABLE_SWITCH()
     case 0xab:
       return LOOKUP_SWITCH()
-    # case 0xac:
-    # 	return ireturn
-    # case 0xad:
-    # 	return lreturn
-    # case 0xae:
-    # 	return freturn
-    # case 0xaf:
-    # 	return dreturn
-    # case 0xb0:
-    # 	return areturn
-    # case 0xb1:
-    # 	return _return
+    case 0xac:
+      return single.ireturn
+    case 0xad:
+      return single.lreturn
+    case 0xae:
+      return single.freturn
+    case 0xaf:
+      return single.dreturn
+    case 0xb0:
+      return single.areturn
+    case 0xb1:
+      return single._return
     case 0xb2:
       return GET_STATIC()
     case 0xb3:
@@ -533,10 +538,10 @@ def new_instruction(opcode :int) ->Instruction:
        return INVOKE_VIRTUAL()
     case 0xb7:
        return INVOKE_SPECIAL()
-    # case 0xb8:
-    # 	return &INVOKE_STATIC{}
-    # case 0xb9:
-    # 	return &INVOKE_INTERFACE{}
+    case 0xb8:
+      return INVOKE_STATIC()
+    case 0xb9:
+      return INVOKE_INTERFACE()
     # case 0xba:
     # 	return &INVOKE_DYNAMIC{}
     case 0xbb:

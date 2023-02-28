@@ -1,3 +1,4 @@
+import logging
 from ..base.instruction import *
 
 from jvm.rtda.frame import Frame
@@ -29,16 +30,18 @@ class LDC(Index8Instuction):
     ldc(frame, self.index)
 
 
-class LDC_W(Index8Instuction):
+class LDC_W(Index16Instuction):
   def execute(self, frame: Frame):
     ldc(frame, self.index)
 
 
-class LDC2_W(Index8Instuction):
+class LDC2_W(Index16Instuction):
   def execute(self, frame: Frame):
     stack = frame.operand_stack
-    cp = frame.method().clazz.constant_pool
+    cp = frame.method.clazz.constant_pool
+    # logging.info(f'{cp.consts=} {self.index=}')
     c = cp.get_constant(self.index)
+    # print(f'{c=}')
     match c:
       case int():
         stack.push_long(c)

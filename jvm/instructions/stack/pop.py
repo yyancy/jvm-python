@@ -3,7 +3,9 @@ from jvm.rtda.frame import Frame
 
 
 class POP(NoOperandsInstuction):
-  pass
+  def fetch_operands(self, reader: BytecodeReader):
+    pass
+  
 
   def execute(self, frame: Frame):
     stack = frame.operand_stack
