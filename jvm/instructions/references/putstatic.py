@@ -1,3 +1,4 @@
+import logging
 from jvm.instructions.base import class_init_logic
 from ..base.instruction import *
 
@@ -24,8 +25,7 @@ class PUT_STATIC(Index16Instuction):
     if not field.is_static():
       raise SystemExit('java.lang.IncompatibleClassChangeError')
     if field.is_final():
-      print('------------------what ---------------------------------------------------')
-      print(f'current_class {current_class}')
+      logging.debug(f'current_class {current_class}')
       if current_class != clazz or current_method.name != '<clinit>':
         raise SystemExit('java.lang.IllegalAccessError')
 

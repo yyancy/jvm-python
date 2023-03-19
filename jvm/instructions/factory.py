@@ -1,9 +1,15 @@
 from jvm.instructions.control.mreturn import ARETURN, DRETURN, FRETURN, IRETURN, LRETURN, RETURN
+from jvm.instructions.loads.xaload import *
+from jvm.instructions.references.anewarray import ANEW_ARRAY
+from jvm.instructions.references.arraylength import ARRAY_LENGTH
 from jvm.instructions.references.invokeinterface import INVOKE_INTERFACE
 from jvm.instructions.references.invokestatic import INVOKE_STATIC
+from jvm.instructions.references.multianewarray import MULTI_ANEW_ARRAY
+from jvm.instructions.references.newarray import NEW_ARRAY
 from jvm.instructions.stack.pop import POP, POP2
 from jvm.instructions.stack.dup import DUP,DUP2, DUP2_X1,DUP2_X2,DUP_X1,DUP_X2
 from jvm.instructions.stack.swap import SWAP
+from jvm.instructions.stores.xastore import *
 from . import *
 from .base import *
 from .comparisons import *
@@ -54,14 +60,14 @@ single.aload_0     = ALOAD_0()
 single.aload_1     = ALOAD_1()
 single.aload_2     = ALOAD_2()
 single.aload_3     = ALOAD_3()
-# single.iaload      = IALOAD()
-# single.laload      = LALOAD()
-# single.faload      = FALOAD()
-# single.daload      = DALOAD()
-# single.aaload      = AALOAD()
-# single.baload      = BALOAD()
-# single.caload      = CALOAD()
-# single.saload      = SALOAD()
+single.iaload      = IALOAD()
+single.laload      = LALOAD()
+single.faload      = FALOAD()
+single.daload      = DALOAD()
+single.aaload      = AALOAD()
+single.baload      = BALOAD()
+single.caload      = CALOAD()
+single.saload      = SALOAD()
 single.istore_0 = ISTORE_0()
 single.istore_1 = ISTORE_1()
 single.istore_2 = ISTORE_2()
@@ -82,14 +88,14 @@ single.astore_0 = ASTORE_0()
 single.astore_1 = ASTORE_1()
 single.astore_2 = ASTORE_2()
 single.astore_3 = ASTORE_3()
-# single.iastore  = IASTORE()
-# single.lastore  = LASTORE()
-# single.fastore  = FASTORE()
-# single.dastore  = DASTORE()
-# single.aastore  = AASTORE()
-# single.bastore  = BASTORE()
-# single.castore  = CASTORE()
-# single.sastore  = SASTORE()
+single.iastore  = IASTORE()
+single.lastore  = LASTORE()
+single.fastore  = FASTORE()
+single.dastore  = DASTORE()
+single.aastore  = AASTORE()
+single.bastore  = BASTORE()
+single.castore  = CASTORE()
+single.sastore  = SASTORE()
 single.pop     = POP()
 single.pop2    = POP2()
 single.dup     = DUP()
@@ -161,7 +167,7 @@ single.freturn = FRETURN()
 single.dreturn = DRETURN()
 single.areturn = ARETURN()
 single._return = RETURN()
-# single.arraylength   = ARRAY_LENGTH()
+single.arraylength   = ARRAY_LENGTH()
 # single.athrow        = ATHROW()
 # single.monitorenter  = MONITOR_ENTER()
 # single.monitorexit   = MONITOR_EXIT()
@@ -262,22 +268,22 @@ def new_instruction(opcode :int) ->Instruction:
       return single.aload_2
     case 0x2d:
       return single.aload_3
-    # case 0x2e:
-    # 	return iaload
-    # case 0x2f:
-    # 	return laload
-    # case 0x30:
-    # 	return faload
-    # case 0x31:
-    # 	return daload
-    # case 0x32:
-    # 	return aaload
-    # case 0x33:
-    # 	return baload
-    # case 0x34:
-    # 	return caload
-    # case 0x35:
-    # 	return saload
+    case 0x2e:
+      return single.iaload
+    case 0x2f:
+      return single.laload
+    case 0x30:
+      return single.faload
+    case 0x31:
+      return single.daload
+    case 0x32:
+      return single.aaload
+    case 0x33:
+      return single.baload
+    case 0x34:
+      return single.caload
+    case 0x35:
+      return single.saload
     case 0x36:
       return ISTORE()
     case 0x37:
@@ -328,22 +334,22 @@ def new_instruction(opcode :int) ->Instruction:
       return single.astore_2
     case 0x4e:
       return single.astore_3
-    # case 0x4f:
-    # 	return iastore
-    # case 0x50:
-    # 	return lastore
-    # case 0x51:
-    # 	return fastore
-    # case 0x52:
-    # 	return dastore
-    # case 0x53:
-    # 	return aastore
-    # case 0x54:
-    # 	return bastore
-    # case 0x55:
-    # 	return castore
-    # case 0x56:
-    # 	return sastore
+    case 0x4f:
+      return single.iastore
+    case 0x50:
+      return single.lastore
+    case 0x51:
+      return single.fastore
+    case 0x52:
+      return single.dastore
+    case 0x53:
+      return single.aastore
+    case 0x54:
+      return single.bastore
+    case 0x55:
+      return single.castore
+    case 0x56:
+      return single.sastore
     case 0x57:
       return single.pop
     case 0x58:
@@ -546,14 +552,14 @@ def new_instruction(opcode :int) ->Instruction:
     # 	return &INVOKE_DYNAMIC{}
     case 0xbb:
        return NEW()
-    # case 0xbc:
-    # 	return &NEW_ARRAY{}
-    # case 0xbd:
-    # 	return &ANEW_ARRAY{}
-    # case 0xbe:
-    # 	return arraylength
+    case 0xbc:
+      return NEW_ARRAY()
+    case 0xbd:
+      return ANEW_ARRAY()
+    case 0xbe:
+      return single.arraylength
     # case 0xbf:
-    # 	return athrow
+    #  return single.athrow
     case 0xc0:
        return CHECK_CAST()
     case 0xc1:
@@ -564,8 +570,8 @@ def new_instruction(opcode :int) ->Instruction:
     # 	return monitorexit
     case 0xc4:
       return WIDE()
-    # case 0xc5:
-    # 	return &MULTI_ANEW_ARRAY{}
+    case 0xc5:
+      return MULTI_ANEW_ARRAY()
     case 0xc6:
       return IFNULL()
     case 0xc7:

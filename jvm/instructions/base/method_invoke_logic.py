@@ -1,3 +1,4 @@
+import logging
 from ...rtda.frame import Frame
 from ...rtda.thread import Thread
 from ...rtda.heap.method import Method
@@ -10,6 +11,7 @@ def invoke_method(invoke_frame: Frame, method: Method):
   arg_slot_slot = method.arg_slot_count
   if arg_slot_slot > 0:
     for i in range(arg_slot_slot-1, -1, -1):
+      logging.debug(f'invoke_method： {arg_slot_slot=} {i=}')
       slot = invoke_frame.operand_stack.pop_slot()
       new_frame.local_vars.set_slot(i, slot)
 

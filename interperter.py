@@ -35,11 +35,13 @@ def log_frames(thread: jvm.rtda.thread.Thread):
     class_name = method.clazz.name
     print(f'>> pc:{frame.next_pc} {class_name=} {method.name=} {method.descriptor=}')
 
+
 def log_instruction(frame: Frame, inst: instruction.Instruction):
     method = frame.method
     class_name = method.clazz.name
     method_name = method.name
     pc = frame.thread.pc
+
     print(f'{class_name=} {method_name=} {pc=} {inst=}')
     
 
@@ -55,6 +57,7 @@ def loop(thread: jvm.rtda.thread.Thread,log_inst:bool):
     opcode = reader.read_u8()
     inst: instruction.Instruction = factory.new_instruction(opcode)
 
+
     # logging.info(f"{opcode=:0x} {pc=} {inst=}")
     # logging.info(frame.local_vars.slots)
     # logging.info(f'{frame.operand_stack.slots} {frame.operand_stack.size}')
@@ -62,7 +65,7 @@ def loop(thread: jvm.rtda.thread.Thread,log_inst:bool):
     inst.fetch_operands(reader)
     frame.set_next_pc(reader.pc)
     if (log_inst):
-        log_instruction(frame, inst)
+      log_instruction(frame, inst)
 
     # execute
     inst.execute(frame)

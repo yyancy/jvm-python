@@ -18,13 +18,13 @@ pp = pprint.PrettyPrinter(indent=4)
 #                     datefmt='%Y-%m-%d:%H:%M:%S',
 #                     level=logging.INFO)
 logging.basicConfig(format='%(levelname)-2s [%(filename)s:%(lineno)d] %(message)s',
-                    level=logging.INFO)
+                    level=logging.WARNING)
 
 
 def start_jvm(cmd: Cmd):
   cp = classpath.parse(cmd.XjreOption, cmd.cpOption)
   class_loader = loader.ClassLoader(cp, cmd.verboseClassFlag)
-  print(f"classpath: [{cp}] class: [{cmd.clazz}] args: [{cmd.args}]")
+  logging.info(f"classpath: [{cp}] class: [{cmd.clazz}] args: [{cmd.args}]")
   class_name = cmd.clazz.replace('.', '/', -1)
   main_class = class_loader.load_class(class_name)
   main_method = main_class.get_main_method()

@@ -14,8 +14,7 @@ class OperandStack:
   def push_int(self, val: int):
     slot = Slot()
     slot.num = val
-    # print(f"{self.size=} len {len(self.slots)}")
-    # logging.debug(f"slots size = {len(self.slots)=}, current size = {self.size=}")
+    logging.debug(f"slots size = {len(self.slots)=}, current size = {self.size=}")
     self.slots[self.size] = slot
     self.size += 1
 

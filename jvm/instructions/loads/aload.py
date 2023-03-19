@@ -34,8 +34,8 @@ class ALOAD_3(NoOperandsInstuction):
 
 
 def aload(frame: Frame, index: int):
-  logging.info(f'local_vars {frame.local_vars.slots}')
+  logging.debug(f'local_vars {frame.local_vars.slots}, stack {frame.operand_stack.slots} stack size={frame.operand_stack.size}')
   val = frame.local_vars.get_ref(index)
-  logging.info(f'{val=} {index=}')
+  logging.debug(f'{val=} {index=}')
   frame.operand_stack.push_ref(val)
-  logging.info(f'{frame.operand_stack.slots}')
+  logging.debug(f'{frame.operand_stack.slots}')

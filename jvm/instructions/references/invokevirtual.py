@@ -68,3 +68,4 @@ def _println(stack: OperandStack, descriptor: str):
       print(f'{stack.pop_double()}')
     case _:
       raise SystemExit(f'println: {descriptor}')
+  stack.pop_ref()

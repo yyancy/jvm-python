@@ -7,13 +7,50 @@ from .import cls
 from .slots import *
 
 
+def new_array_object(clazz: cls.Class, data) -> Object:
+  o = Object(clazz)
+  o.data = data
+  return o
+
+
 class Object:
   clazz: cls.Class
-  fields: Slots
+  data: object
 
   def __init__(self, clazz: cls.Class) -> None:
     self.clazz = clazz
-    self.fields = Slots(clazz.instance_slot_count)
+    self.data = Slots(clazz.instance_slot_count)
 
-  def is_instance_of(self, clazz :cls.Class)-> bool:
+  def is_instance_of(self, clazz: cls.Class) -> bool:
     return clazz.is_assignable_from(self.clazz)
+
+  def fields(self) -> Slots:
+    return self.data
+
+  def bytes(self) -> list[int]:
+    return self.data
+
+  def shorts(self) -> list[int]:
+    return self.data
+
+  def ints(self) -> list[int]:
+    return self.data
+
+  def chars(self) -> list[int]:
+    return self.data
+
+  def floats(self) -> list[float]:
+    return self.data
+
+  def doubles(self) -> list[float]:
+    return self.data
+
+  def refs(self) -> list[Object]:
+    return self.data
+
+  def array_length(self) -> int:
+    match self.data:
+      case list() as arr:
+        return len(arr)
+      case _:
+        raise SystemExit(f'Not array!')
