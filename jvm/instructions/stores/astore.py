@@ -3,11 +3,6 @@ from jvm.rtda.frame import Frame
 import logging
 
 class ASTORE(Index8Instuction):
-  def __init__(self) -> None:
-    pass
-
-  def fetch_operands(self, reader: BytecodeReader):
-    self.val = reader.read_u8()
 
   def execute(self, frame: Frame):
     astore(frame, self.index)

@@ -126,7 +126,10 @@ def init_static_final_var(clazz: cls.Class, field: Field):
         val: float = cp.get_constant(cp_index)
         vars.set_int(slot_id, val)
       case 'Ljava/lang/String;':
-        assert False, 'todo'
+        from jvm.rtda.heap.string_pool import jstring
+        py_str: str = cp.get_constant(cp_index)
+        jstr = jstring(clazz.loader, py_str)
+        vars.set_ref(slot_id, jstr)
 
 
 def alloc_and_init_static_vars(clazz: cls.Class):

@@ -208,6 +208,16 @@ class Class:
   
   def is_super_interface_of(self, iface:Class)-> bool:
     return iface.is_subinterface_of(self)
+  
+  def get_field(self, name:str, descriptor:str, is_static: bool)-> Field:
+    c = self
+    while c != None:
+      for field in c.fields:
+        if (field.is_static() == is_static 
+            and field.name == name and field.descriptor == descriptor ):
+          return field
+      
+      c = c.super_class
 
 
 

@@ -1,6 +1,7 @@
 
 from jvm.instructions.base.method_invoke_logic import invoke_method
 from jvm.rtda.heap.method_lookup import lookup_method_in_class
+from jvm.rtda.heap.string_pool import pystring
 from jvm.rtda.operand_stack import OperandStack
 from ..base.instruction import *
 
@@ -66,6 +67,11 @@ def _println(stack: OperandStack, descriptor: str):
       print(f'{stack.pop_long()}')
     case '(D)V':
       print(f'{stack.pop_double()}')
+    case '(Ljava/lang/String;)V':
+      jstr = stack.pop_ref()
+      py_str = pystring(jstr)
+      print(py_str)
+      
     case _:
       raise SystemExit(f'println: {descriptor}')
   stack.pop_ref()

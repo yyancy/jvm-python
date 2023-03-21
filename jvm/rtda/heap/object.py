@@ -48,6 +48,16 @@ class Object:
   def refs(self) -> list[Object]:
     return self.data
 
+  def set_refvar(self, name: str, descriptor: str, ref: Object):
+    field = self.clazz.get_field(name, descriptor, False)
+    slots: Slots = self.data
+    slots.set_ref(field.slot_id, ref)
+
+  def get_refvar(self, name: str, descriptor: str)-> Object:
+    field = self.clazz.get_field(name, descriptor, False)
+    slots: Slots = self.data
+    return slots.get_ref(field.slot_id)
+    
   def array_length(self) -> int:
     match self.data:
       case list() as arr:

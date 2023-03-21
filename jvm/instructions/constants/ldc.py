@@ -1,6 +1,6 @@
 import logging
 from ..base.instruction import *
-
+import jvm.rtda.heap.string_pool as string_pool
 from jvm.rtda.frame import Frame
 from ...rtda.heap import constant_pool
 from ...rtda.heap import cp_classref
@@ -12,12 +12,15 @@ def ldc(frame: Frame, index: int):
   stack = frame.operand_stack
   cp = frame.method.clazz.constant_pool
   c = cp.get_constant(index)
+  clazz = frame.method.clazz
   match c:
     case int():
       stack.push_int(c)
     case float():
       stack.push_float(c)
-    # case str:
+    case str():
+      interned_str = string_pool.jstring(clazz.loader, c)
+      stack.push_ref(interned_str)
     # case ClassRef:
     case _:
       raise SystemExit('todo: ldc')

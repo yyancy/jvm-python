@@ -42,7 +42,7 @@ def start_jvm(cmd: Cmd):
 
   # main_method = get_main_method(cf)
   if main_method != None:
-    interperter.interpret(main_method, cmd.verboseInstFlag)
+    interperter.interpret(main_method, cmd.verboseInstFlag, cmd.args)
   else:
     logging.warning(f"Main method not found in class {cmd.clazz}")
 
