@@ -60,6 +60,15 @@ class OperandStack:
     self.slots[self.size] = slot
     self.size += 1
 
+  def push_bool(self, o: bool):
+    if o:
+      self.push_int(1)
+    else:
+      self.push_int(0)
+      
+  def pop_bool(self)->bool:
+    return self.pop_int() == 1
+
   def pop_ref(self) -> object:
     self.size -= 1
     ref = self.slots[self.size].ref

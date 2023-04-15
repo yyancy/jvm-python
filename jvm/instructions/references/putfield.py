@@ -33,7 +33,7 @@ class PUT_FIELD(Index16Instuction):
         ref = stack.pop_ref()
         if ref == None:
           raise SystemExit('java.lang.NullPointerException')
-        ref.fields.set_int(slot_id, val)
+        ref.fields().set_int(slot_id, val)
 
       case 'F':
         val = stack.pop_float()

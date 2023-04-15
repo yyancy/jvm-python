@@ -46,5 +46,7 @@ class LocalVars:
 
   def get_ref(self, i: int) -> object:
     return self.slots[i].ref
+  def get_this(self) -> object:
+    return self.slots[0].ref
   def set_slot(self, i:int, slot:Slot):
     self.slots[i] = slot

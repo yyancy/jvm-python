@@ -47,6 +47,7 @@ class Class:
     self.instance_slot_count: uint32 = 0
     self.static_slot_count: uint32 = 0
     self.static_vars: Slots = None
+    self.jclass = None # Object
     if cf == None:
       return
     self.access_flags = cf.access_flags
@@ -208,6 +209,9 @@ class Class:
   
   def is_super_interface_of(self, iface:Class)-> bool:
     return iface.is_subinterface_of(self)
+  
+  def java_name(self)-> str:
+    return self.name.replace('/','.')
   
   def get_field(self, name:str, descriptor:str, is_static: bool)-> Field:
     c = self

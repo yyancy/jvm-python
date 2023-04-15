@@ -6,6 +6,7 @@ from jvm.instructions.references.invokeinterface import INVOKE_INTERFACE
 from jvm.instructions.references.invokestatic import INVOKE_STATIC
 from jvm.instructions.references.multianewarray import MULTI_ANEW_ARRAY
 from jvm.instructions.references.newarray import NEW_ARRAY
+from jvm.instructions.reserved.invokenative import INVOKE_NATIVE
 from jvm.instructions.stack.pop import POP, POP2
 from jvm.instructions.stack.dup import DUP,DUP2, DUP2_X1,DUP2_X2,DUP_X1,DUP_X2
 from jvm.instructions.stack.swap import SWAP
@@ -171,7 +172,7 @@ single.arraylength   = ARRAY_LENGTH()
 # single.athrow        = ATHROW()
 # single.monitorenter  = MONITOR_ENTER()
 # single.monitorexit   = MONITOR_EXIT()
-# single.invoke_native = INVOKE_NATIVE()
+single.invoke_native = INVOKE_NATIVE()
 
     
 def new_instruction(opcode :int) ->Instruction:
@@ -581,7 +582,8 @@ def new_instruction(opcode :int) ->Instruction:
     # case 0xc9:
     # 	return &JSR_W{}
     # case 0xca: breakpoint
-    # case 0xfe: impdep1
+    case 0xfe: 
+      return single.invoke_native
     # case 0xff: impdep2
     case _:
       assert False, f'Unsupported opcode: {opcode:x}'

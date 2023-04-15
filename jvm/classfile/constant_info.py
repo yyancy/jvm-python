@@ -125,7 +125,7 @@ class StringConstantInfo(ConstantInfo):
     self.string_index = reader.read_u16()
   
   def string(self)-> str:
-    self.cp().get_utf8(self.string_index)
+    return self.cp().get_utf8(self.string_index)
 
 
 

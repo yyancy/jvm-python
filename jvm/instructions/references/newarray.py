@@ -24,7 +24,10 @@ class NEW_ARRAY(Instruction):
     self.atype = 0
 
   def fetch_operands(self, reader: BytecodeReader):
+    
     self.atype = reader.read_u8()
+    
+    
 
   def execute(self, frame: Frame):
     stack = frame.operand_stack

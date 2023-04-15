@@ -7,9 +7,10 @@ from .cls import Class
 def lookup_method_in_class(clazz: Class, name: str, descriptor: str) -> Method:
   c = clazz
   while c != None:
-    for method in clazz.methods:
-      if method.name == name and method.descriptor == descriptor:
-        return method
+    if c.methods !=None:
+      for method in c.methods:
+        if method.name == name and method.descriptor == descriptor:
+          return method
     c = c.super_class
   return None
 

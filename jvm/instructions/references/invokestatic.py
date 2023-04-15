@@ -5,7 +5,7 @@ from jvm.instructions.base.instruction import Index16Instuction
 from jvm.instructions.base.method_invoke_logic import invoke_method
 from jvm.rtda.frame import Frame
 from jvm.rtda.heap.cp_methodref import MethodRef
-
+import logging
 
 class INVOKE_STATIC(Index16Instuction):
   def execute(self, frame: Frame):
@@ -20,6 +20,7 @@ class INVOKE_STATIC(Index16Instuction):
       frame.revert_next_pc()
       class_init_logic.init_class(frame.thread, clazz)
       return
-    
+
+    logging.info(f'start...')
     invoke_method(frame, resolved_method)
 

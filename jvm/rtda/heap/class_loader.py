@@ -20,6 +20,30 @@ class ClassLoader:
     self.cp = cp
     self.class_map = dict()
     self.verbose_flag = verbose_flag
+    self.load_basic_classes()
+    self.load_primitive_classes()
+
+  def load_primitive_classes(self):
+    for primitive in cls.primitive_types:
+      self.load_primitive_class(primitive)
+
+  def load_primitive_class(self, class_name: str):
+    clazz = cls.Class(None)
+    clazz.access_flags = access_flag.ACC_PUBLIC
+    clazz.name = class_name
+    clazz.loader = self
+    clazz.init_started = True
+
+    clazz.jclass = self.class_map['java/lang/Class'].new_object()
+    clazz.jclass.extra = clazz
+    self.class_map[class_name] = clazz
+
+  def load_basic_classes(self):
+    jl_class_class = self.load_class('java/lang/Class')
+    for _, clazz in self.class_map.items():
+      if clazz.jclass == None:
+        clazz.jclass = jl_class_class.new_object()
+        clazz.jclass.extra = clazz
 
   def read_class(self, name: str) -> tuple[bytes, classpath.Entry]:
     data, entry, err = self.cp.read_class(name)
@@ -50,6 +74,7 @@ class ClassLoader:
     return clazz
 
   def load_non_array_class(self, name: str) -> cls.Class:
+    
     data, entry = self.read_class(name)
     clazz = self.define_class(data)
     link(clazz)
@@ -62,10 +87,18 @@ class ClassLoader:
     clz = self.class_map.get(name)
     if clz != None:
       return clz  # has already loaded
+    clazz = None
     if name[0] == "[":
-      return self.load_array_class(name)
+      clazz = self.load_array_class(name)
+    else:
+      clazz = self.load_non_array_class(name)
 
-    return self.load_non_array_class(name)
+    jl_class_class = self.class_map.get('java/lang/Class')
+    if jl_class_class != None:
+      clazz.jclass = jl_class_class.new_object()
+      clazz.jclass.extra = clazz
+    
+    return clazz
 
 
 def parse_class(data: bytes) -> cls.Class:

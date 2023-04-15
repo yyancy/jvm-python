@@ -29,7 +29,7 @@ def parse_cmd() -> Cmd:
   parser.add_argument("--verbose:inst", help="print logs of instruction",
                       type=bool, action=argparse.BooleanOptionalAction, dest='instFlag')
   parser.add_argument("--verbose:class", help="print class of instruction",
-                      type=bool, action="store", dest='classFlag')
+                      type=bool, action=argparse.BooleanOptionalAction, dest='classFlag')
   args, unknown = parser.parse_known_args()
   cmd = Cmd(args.classpath, args.clazz, args.Xjre,
             args.classFlag, args.instFlag, unknown)

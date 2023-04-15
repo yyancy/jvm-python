@@ -73,10 +73,9 @@ def loop(thread: jvm.rtda.thread.Thread, log_inst: bool):
     opcode = reader.read_u8()
     inst: instruction.Instruction = factory.new_instruction(opcode)
 
-    # logging.info(f"{opcode=:0x} {pc=} {inst=}")
+    # logging.info(f"----------{opcode=:0x} {pc=} {inst=}")
     # logging.info(frame.local_vars.slots)
     # logging.info(f'{frame.operand_stack.slots} {frame.operand_stack.size}')
-
     inst.fetch_operands(reader)
     frame.set_next_pc(reader.pc)
     if (log_inst):

@@ -1,12 +1,12 @@
 import logging
 from ..base.instruction import *
 import jvm.rtda.heap.string_pool as string_pool
+from jvm.rtda.heap import cp_classref
 from jvm.rtda.frame import Frame
 from ...rtda.heap import constant_pool
-from ...rtda.heap import cp_classref
 from ...rtda.heap import object
 from ...rtda.heap.cp_fieldref import FieldRef
-
+import pprint
 
 def ldc(frame: Frame, index: int):
   stack = frame.operand_stack
@@ -21,7 +21,10 @@ def ldc(frame: Frame, index: int):
     case str():
       interned_str = string_pool.jstring(clazz.loader, c)
       stack.push_ref(interned_str)
-    # case ClassRef:
+    case cp_classref.ClassRef():
+      class_ref:cp_classref.ClassRef = c
+      class_obj = class_ref.resolved_class().jclass
+      stack.push_ref(class_obj)
     case _:
       raise SystemExit('todo: ldc')
 

@@ -16,9 +16,9 @@ def invoke_method(invoke_frame: Frame, method: Method):
       new_frame.local_vars.set_slot(i, slot)
 
   # hack
-  if method.is_native():
-    if method.name == 'registerNatives':
-      thread.pop_frame()
-    else:
-      raise SystemExit(
-          f'native method: {method.clazz.name}.{method.name}{method.descriptor}')
+  # if method.is_native():
+  #   if method.name == 'registerNatives':
+  #     thread.pop_frame()
+  #   else:
+  #     raise SystemExit(
+  #         f'native method: {method.clazz.name}.{method.name}{method.descriptor}')

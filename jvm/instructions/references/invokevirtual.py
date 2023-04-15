@@ -41,8 +41,12 @@ class INVOKE_VIRTUAL(Index16Instuction):
             not ref.clazz.is_subclass_of(current_class)):
       raise SystemExit('java.lang.IllegalAccessError')
 
+    # logging.info(f'{ref.clazz.super_class.methods=}, {method_ref.name}, {method_ref.descriptor}')
+    # for m in ref.clazz.super_class.methods:
+      # print(f'>>>>>>>>>{m.name=} {m.descriptor=}')
     method_to_be_invoked = lookup_method_in_class(
         ref.clazz, method_ref.name, method_ref.descriptor)
+    logging.info(f'{method_to_be_invoked=}')
     if method_to_be_invoked == None or method_to_be_invoked.is_abstract():
       raise SystemExit('java.lang.AbstractMethodError')
 

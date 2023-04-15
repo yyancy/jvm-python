@@ -26,7 +26,7 @@ class GET_FIELD(Index16Instuction):
     
     descriptor = field.descriptor
     slot_id = field.slot_id
-    slots = ref.fields
+    slots = ref.fields()
 
     match(descriptor[0]):
       case 'Z'| 'B'| 'C'| 'S'| 'I':

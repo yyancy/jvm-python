@@ -16,6 +16,7 @@ def new_array_object(clazz: cls.Class, data) -> Object:
 class Object:
   clazz: cls.Class
   data: object
+  extra: object
 
   def __init__(self, clazz: cls.Class) -> None:
     self.clazz = clazz

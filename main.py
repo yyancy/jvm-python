@@ -2,13 +2,15 @@ import logging
 import pprint
 import interperter
 
+logging.basicConfig(format='%(levelname)-2s [%(filename)s:%(lineno)d] %(message)s',
+                    level=logging.WARNING)
 from objprint import op
 
 import jvm.classpath.classpath as classpath
 from jvm.classfile.class_file import *
 from jvm.classpath.new_entry import *
 import jvm.rtda.heap.class_loader as loader
-
+import jvm.native
 from parse import *
 
 from jvm.rtda.frame import *
@@ -17,8 +19,6 @@ pp = pprint.PrettyPrinter(indent=4)
 # logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
 #                     datefmt='%Y-%m-%d:%H:%M:%S',
 #                     level=logging.INFO)
-logging.basicConfig(format='%(levelname)-2s [%(filename)s:%(lineno)d] %(message)s',
-                    level=logging.WARNING)
 
 
 def start_jvm(cmd: Cmd):
