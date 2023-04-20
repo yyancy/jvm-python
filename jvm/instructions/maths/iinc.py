@@ -10,7 +10,7 @@ class IINC(Instruction):
 
   def fetch_operands(self, reader: BytecodeReader):
     self.index = uint32(reader.read_u8())
-    self.const = int32(reader.read_u8())
+    self.const = int32(reader.read_s8())
 
   def execute(self, frame: Frame):
     local_vars = frame.local_vars

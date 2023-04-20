@@ -63,5 +63,7 @@ class Object:
     match self.data:
       case list() as arr:
         return len(arr)
+      case bytes() as arr:
+        return len(arr)
       case _:
         raise SystemExit(f'Not array!')

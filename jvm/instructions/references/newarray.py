@@ -43,7 +43,7 @@ class NEW_ARRAY(Instruction):
 def get_primitive_array_class(loader: ClassLoader, atype: int) -> Class:
   match atype:
     case single.AT_BOOLEAN:
-      return loader.load_class('[z')
+      return loader.load_class('[Z')
     case single.AT_BYTE:
       return loader.load_class('[B')
     case single.AT_CHAR:
@@ -53,7 +53,7 @@ def get_primitive_array_class(loader: ClassLoader, atype: int) -> Class:
     case single.AT_INT:
       return loader.load_class('[I')
     case single.AT_LONG:
-      return loader.load_class('[L')
+      return loader.load_class('[J')
     case single.AT_FLOAT:
       return loader.load_class('[F')
     case single.AT_DOUBLE:

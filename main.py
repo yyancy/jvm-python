@@ -3,7 +3,7 @@ import pprint
 import interperter
 
 logging.basicConfig(format='%(levelname)-2s [%(filename)s:%(lineno)d] %(message)s',
-                    level=logging.WARNING)
+                    level=logging.INFO)
 from objprint import op
 
 import jvm.classpath.classpath as classpath
@@ -13,7 +13,12 @@ import jvm.rtda.heap.class_loader as loader
 import jvm.native
 from parse import *
 
+
+
 from jvm.rtda.frame import *
+
+
+
 
 pp = pprint.PrettyPrinter(indent=4)
 # logging.basicConfig(format='%(asctime)s,%(msecs)03d %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',

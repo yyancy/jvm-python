@@ -32,6 +32,12 @@ class Class:
   instance_slot_count: uint32
   static_slot_count: uint32
   static_vars: Slots
+  
+  def __eq__(self, other)-> bool:
+    if isinstance(other, self.__class__):
+      return self.__dict__ == other.__dict__
+    else:
+      return False
 
   def __init__(self, cf: ClassFile) -> None:
     self.access_flags: uint16 = 0
@@ -43,7 +49,7 @@ class Class:
     self.methods: list[method.Method] = None
     self.loader: ClassLoader = None
     self.super_class: Class = None
-    self.interfaces: list[Class] = None
+    self.interfaces: list[Class] = []
     self.instance_slot_count: uint32 = 0
     self.static_slot_count: uint32 = 0
     self.static_vars: Slots = None
@@ -68,6 +74,11 @@ class Class:
   def component_class(self) -> Class:
     component_class_name = get_component_class_name(self.name)
     return self.loader.load_class(component_class_name)
+  
+  def is_primitive(self)->bool:
+    val = primitive_types.get(self.name)
+    return val != None
+    
 
   def new_array(self, count: int) -> Object:
     if not self.is_array():

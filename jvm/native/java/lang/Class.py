@@ -6,7 +6,6 @@ from jvm.rtda.heap import string_pool
 import logging
 
 def get_primitive_class(frame: Frame):
-  logging.info('coming')
   name_obj = frame.local_vars.get_ref(0)
   name = string_pool.pystring(name_obj)
   loader = frame.method.clazz.loader

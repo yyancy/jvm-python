@@ -21,6 +21,5 @@ class INVOKE_STATIC(Index16Instuction):
       class_init_logic.init_class(frame.thread, clazz)
       return
 
-    logging.info(f'start...')
     invoke_method(frame, resolved_method)
 

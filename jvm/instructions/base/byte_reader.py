@@ -30,6 +30,9 @@ class BytecodeReader:
   def read_u8(self) -> int:
     return self.read_ubytes(1)
 
+  def read_s8(self) -> int:
+    return self.read_sbytes(1)
+
   def read_u16(self) -> int:
     return self.read_ubytes(2)
 

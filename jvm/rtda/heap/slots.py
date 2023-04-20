@@ -23,7 +23,11 @@ class Slots:
     self.slots[i] = slot
 
   def get_int(self, i: int) -> int:
-    return self.slots[i].num
+    # return self.slots[i].num
+    slot = self.slots[i] 
+    if slot == None:
+      return 0 
+    return slot.num
 
   def set_float(self, i: int, val: float):
     self.set_int(i, val)
