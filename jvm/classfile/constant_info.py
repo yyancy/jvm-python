@@ -84,7 +84,7 @@ class DoubleConstantInfo(ConstantInfo):
   def read_info(self, reader: ClassReader) -> None:
     import struct
     data = reader.read_bytes(8)
-    [self.value] = struct.unpack('d', data)
+    [self.value] = struct.unpack('>d', data)
 
 
 class FloatConstantInfo(ConstantInfo):
@@ -95,7 +95,7 @@ class FloatConstantInfo(ConstantInfo):
   def read_info(self, reader: ClassReader) -> None:
     import struct
     data = reader.read_bytes(4)
-    [self.value] = struct.unpack('f', data)
+    [self.value] = struct.unpack('>f', data)
 
 
 class LongConstantInfo(ConstantInfo):

@@ -13,3 +13,9 @@ def hashcode(frame: Frame):
   this = frame.local_vars.get_this()
   val = hash(this)
   frame.operand_stack.push_int(val)
+def clone(frame: Frame):
+  this = frame.local_vars.get_this()
+  cloneable = this.clazz.loader.load_class('java/lang/Cloneable')
+  if not this.clazz.is_implements(cloneable):
+    raise SystemExit(f'java.lang.CloneNotSupportedException')
+  frame.operand_stack.push_ref(this.clone())

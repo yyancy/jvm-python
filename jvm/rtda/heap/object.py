@@ -54,11 +54,11 @@ class Object:
     slots: Slots = self.data
     slots.set_ref(field.slot_id, ref)
 
-  def get_refvar(self, name: str, descriptor: str)-> Object:
+  def get_refvar(self, name: str, descriptor: str) -> Object:
     field = self.clazz.get_field(name, descriptor, False)
     slots: Slots = self.data
     return slots.get_ref(field.slot_id)
-    
+
   def array_length(self) -> int:
     match self.data:
       case list() as arr:
@@ -67,3 +67,23 @@ class Object:
         return len(arr)
       case _:
         raise SystemExit(f'Not array!')
+
+  def clone_data(self):
+    match self.data:
+      case list():
+        length = len(self.data)
+        new_data = [0] * length
+        for i, v in enumerate(self.data):
+          new_data[i] = v
+          return new_data
+      case Slots() as s:
+        length = len(s.slots)
+        new_data = Slots(length)
+        for i, v in enumerate(s.slots):
+          new_data.slots[i] = v
+          return new_data
+
+  def clone(self) -> Object:
+    o = Object(self.clazz)
+    o.data = self.clone_data()
+    return o

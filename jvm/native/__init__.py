@@ -27,4 +27,5 @@ registry.register("java/lang/Double", "longBitsToDouble",
                   "(J)D", long_bits_to_double)
 registry.register("java/lang/String", "intern", "()Ljava/lang/String;", intern)
 registry.register("java/lang/Object", "hashCode", "()I", Object.hashcode)
+registry.register("java/lang/Object", "clone", "()Ljava/lang/Object;", Object.clone)
 
