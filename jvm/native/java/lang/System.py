@@ -31,6 +31,6 @@ def check_array_copy(src: Object, dest: Object) -> bool:
   if not src_class.is_array() or not dest_class.is_array():
     return False
   
-  if src_class.component_class().is_primitive() or dest_class.component_class().isprimitive():
+  if src_class.component_class().is_primitive() or dest_class.component_class().is_primitive():
     return src_class == dest_class
   return True

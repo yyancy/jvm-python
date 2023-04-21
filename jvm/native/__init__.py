@@ -2,6 +2,7 @@ from jvm.native.java.lang.Double import double_to_raw_long_bits, long_bits_to_do
 from jvm.native.java.lang.Float import float_to_raw_int_bits, int_bits_to_float
 from jvm.native.java.lang.String import intern
 from jvm.native.java.lang.System import array_copy
+from jvm.native.sun.misc.VM import initialize
 from . import registry
 import jvm.native.java.lang.Object as Object
 import jvm.native.java.lang.Class as Class
@@ -28,4 +29,5 @@ registry.register("java/lang/Double", "longBitsToDouble",
 registry.register("java/lang/String", "intern", "()Ljava/lang/String;", intern)
 registry.register("java/lang/Object", "hashCode", "()I", Object.hashcode)
 registry.register("java/lang/Object", "clone", "()Ljava/lang/Object;", Object.clone)
+registry.register("sun/misc/VM", "initialize", "();",initialize)
 

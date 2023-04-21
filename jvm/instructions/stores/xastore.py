@@ -16,13 +16,13 @@ def check_index(len: int, index: int):
 class AASTORE(NoOperandsInstuction):
   def execute(self, frame: Frame):
     stack = frame.operand_stack
-    val = stack.pop_int()
+    ref = stack.pop_ref()
     index = stack.pop_int()
     arr_ref = stack.pop_ref()
     check_not_none(arr_ref)
     refs = arr_ref.refs()
     check_index(len(refs), index)
-    refs[index] = val
+    refs[index] = ref
 
 
 class BASTORE(NoOperandsInstuction):
@@ -52,7 +52,7 @@ class CASTORE(NoOperandsInstuction):
 class DASTORE(NoOperandsInstuction):
   def execute(self, frame: Frame):
     stack = frame.operand_stack
-    val = stack.pop_int()
+    val = stack.pop_double()
     index = stack.pop_int()
     arr_ref = stack.pop_ref()
     check_not_none(arr_ref)
@@ -64,7 +64,7 @@ class DASTORE(NoOperandsInstuction):
 class FASTORE(NoOperandsInstuction):
   def execute(self, frame: Frame):
     stack = frame.operand_stack
-    val = stack.pop_int()
+    val = stack.pop_float()
     index = stack.pop_int()
     arr_ref = stack.pop_ref()
     check_not_none(arr_ref)
@@ -88,7 +88,7 @@ class IASTORE(NoOperandsInstuction):
 class LASTORE(NoOperandsInstuction):
   def execute(self, frame: Frame):
     stack = frame.operand_stack
-    val = stack.pop_int()
+    val = stack.pop_long()
     index = stack.pop_int()
     arr_ref = stack.pop_ref()
     check_not_none(arr_ref)

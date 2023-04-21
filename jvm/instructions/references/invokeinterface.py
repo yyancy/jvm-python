@@ -18,7 +18,6 @@ class INVOKE_INTERFACE(Instruction):
     cp = frame.method.clazz.constant_pool
     method_ref: InterfaceMethodRef = cp.get_constant(self.index)
     resolved_method = method_ref.resolved_interface_method()
-    logging.info(f'{method_ref.name} {resolved_method.arg_slot_count=}')
     if resolved_method.is_static() or resolved_method.is_private():
       raise SystemExit(f'java.lang.IncompatibleClassChangeError')
     ref = frame.operand_stack.get_ref_from_top(
