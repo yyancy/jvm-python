@@ -8,3 +8,8 @@ def get_class(frame: Frame):
   this = frame.local_vars.get_this()
   clazz = this.clazz.jclass
   frame.operand_stack.push_ref(clazz)
+
+def hashcode(frame: Frame):
+  this = frame.local_vars.get_this()
+  val = hash(this)
+  frame.operand_stack.push_int(val)

@@ -27,7 +27,7 @@ class IDIV(NoOperandsInstuction):
     v2 = stack.pop_int()
     v1 = stack.pop_int()
     assert v2 !=0, f"java.lang.ArithmeticException: / by zero"
-    result = v1 / v2
+    result = v1 // v2
     stack.push_int(result)
 
 
@@ -37,5 +37,5 @@ class LDIV(NoOperandsInstuction):
     v2 = stack.pop_long()
     v1 = stack.pop_long()
     assert v2 !=0, f"java.lang.ArithmeticException: / by zero"
-    result = v1 / v2
+    result = v1 // v2
     stack.push_long(result)
