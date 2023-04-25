@@ -1,4 +1,5 @@
 from __future__ import annotations
+from jvm.rtda.heap.exception_table import ExceptionTable
 
 from jvm.rtda.heap.method_descriptor_parser import parse_method_descriptor
 
@@ -25,12 +26,28 @@ class Method(ClassMember):
     self.arg_slot_count = 0
     self.max_stack = 0
     self.max_locals = 0
+    self.exception_table = None
+    self.line_number_table: LineNumberTableAttrInfo = None
     if code_attr != None:
       self.max_stack = code_attr.max_stacks
       self.max_locals = code_attr.max_locals
       self.code = code_attr.codes
+      self.line_number_table = code_attr.line_number_table_attribute()
+      self.exception_table = ExceptionTable(
+          code_attr.exception_table, self.clazz.constant_pool)
 
-  def calc_arg_slot_count(self, param_types:list[str]):
+  def find_exception_handler(self, ex_class: cls.Class, pc: int) -> int:
+    handler = self.exception_table.find_exception_handler(ex_class, pc)
+    return handler.handler_pc if handler is not None else -1
+
+  def get_line_number(self, pc: int) -> int:
+    if self.is_native():
+      return -2
+    if self.line_number_table is None:
+      return -1
+    return self.line_number_table.get_line_number(pc)
+
+  def calc_arg_slot_count(self, param_types: list[str]):
     for param_type in param_types:
       self.arg_slot_count += 1
       if param_type == 'J' or param_type == 'D':
@@ -44,25 +61,24 @@ class Method(ClassMember):
 
   def is_native(self) -> bool:
     return 0 != self.access_flags & access_flag.ACC_NATIVE
-  
+
   def inject_code_attribute(self,
-                            return_type:str):
+                            return_type: str):
     self.max_stack = 4
     self.max_locals = self.arg_slot_count
     match return_type[0]:
       case 'V':
-        self.code = [0xfe, 0xb1] # return
+        self.code = [0xfe, 0xb1]  # return
       case 'D':
-        self.code = [0xfe, 0xaf] # dreturn
+        self.code = [0xfe, 0xaf]  # dreturn
       case 'F':
-        self.code = [0xfe, 0xae] # freturn
+        self.code = [0xfe, 0xae]  # freturn
       case 'J':
-        self.code = [0xfe, 0xad] # lreturn
-      case 'L'|'[':
-        self.code = [0xfe, 0xb0] # areturn
+        self.code = [0xfe, 0xad]  # lreturn
+      case 'L' | '[':
+        self.code = [0xfe, 0xb0]  # areturn
       case _:
-        self.code = [0xfe, 0xac] # ireturn
-        
+        self.code = [0xfe, 0xac]  # ireturn
 
 
 def new_methods(clazz: cls.Class,

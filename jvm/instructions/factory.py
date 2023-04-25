@@ -2,6 +2,7 @@ from jvm.instructions.control.mreturn import ARETURN, DRETURN, FRETURN, IRETURN,
 from jvm.instructions.loads.xaload import *
 from jvm.instructions.references.anewarray import ANEW_ARRAY
 from jvm.instructions.references.arraylength import ARRAY_LENGTH
+from jvm.instructions.references.athrow import ATHROW
 from jvm.instructions.references.invokeinterface import INVOKE_INTERFACE
 from jvm.instructions.references.invokestatic import INVOKE_STATIC
 from jvm.instructions.references.multianewarray import MULTI_ANEW_ARRAY
@@ -169,7 +170,7 @@ single.dreturn = DRETURN()
 single.areturn = ARETURN()
 single._return = RETURN()
 single.arraylength   = ARRAY_LENGTH()
-# single.athrow        = ATHROW()
+single.athrow        = ATHROW()
 # single.monitorenter  = MONITOR_ENTER()
 # single.monitorexit   = MONITOR_EXIT()
 single.invoke_native = INVOKE_NATIVE()
@@ -559,8 +560,8 @@ def new_instruction(opcode :int) ->Instruction:
       return ANEW_ARRAY()
     case 0xbe:
       return single.arraylength
-    # case 0xbf:
-    #  return single.athrow
+    case 0xbf:
+     return single.athrow
     case 0xc0:
        return CHECK_CAST()
     case 0xc1:

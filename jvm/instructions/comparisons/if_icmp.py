@@ -41,7 +41,6 @@ class IF_ICMPGT(BranchInstuction):
 class IF_ICMPGE(BranchInstuction):
   def execute(self, frame: Frame):
     v1, v2 = pop(frame)
-    # print(f"v1 = {v1} v2 = {v2} offset={self.offset}")
     if v1 >= v2:
       self.branch(frame, self.offset)
 

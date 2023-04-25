@@ -4,8 +4,8 @@ from jvm.rtda.heap.object import Object
 
 
 def check_not_none(ref: Object):
-  if ref == None:
-    raise SystemExit(f'java.lang.NullPointerException')
+  if ref is None:
+    raise SystemExit('java.lang.NullPointerException')
 
 
 def check_index(len: int, index: int):
@@ -32,7 +32,7 @@ class BALOAD(NoOperandsInstuction):
     check_not_none(arr_ref)
     byte_list = arr_ref.bytes()
     check_index(len(byte_list), index)
-    stack.push_int(byte_list[index])
+    stack.push_int(int(byte_list[index]))
 
 
 class CALOAD(NoOperandsInstuction):
@@ -43,7 +43,7 @@ class CALOAD(NoOperandsInstuction):
     check_not_none(arr_ref)
     chars = arr_ref.chars()
     check_index(len(chars), index)
-    stack.push_int(chars[index])
+    stack.push_int(ord(chars[index]))
 
 
 class DALOAD(NoOperandsInstuction):

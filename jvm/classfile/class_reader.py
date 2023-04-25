@@ -34,3 +34,10 @@ class ClassReader:
 
   def read_u64(self) -> int:
     return self.read_ubytes(8)
+  
+  def read_sbytes(self, count) -> int:
+    return int.from_bytes(self.data.read(count), 'big', signed=True)
+  
+  def read_s32(self)-> int:
+    return self.read_sbytes(4)
+

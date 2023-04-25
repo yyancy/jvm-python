@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 from .class_member import *
-from .cls import *
 
 from ...classfile.class_file import *
 from ...classfile.constant_info import *
@@ -14,6 +13,7 @@ class Constant:
     self.value = None
 
 
+from jvm.rtda.heap.cls import Class
 class ConstantPool:
   clazz: Class
   consts: list[Constant]

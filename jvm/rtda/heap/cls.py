@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 
+
 from ...common.cons import *
 from . import method
 # from ...classfile.constant_pool import *
@@ -12,10 +13,14 @@ from .field import *
 from .object import Object
 from .object import new_array_object
 from .slots import *
-from jvm.rtda.heap.constant_pool import new_constant_pool, ConstantPool
+# from jvm.rtda.heap.constant_pool import new_constant_pool, ConstantPool
 
 
-from .constant_pool import *
+
+
+def get_source_file(cf: ClassFile) -> str:
+  sf_attr = cf.source_file_attribute()
+  return sf_attr.filename() if sf_attr is not None else 'Unknonw'
 
 
 class Class:
@@ -32,8 +37,8 @@ class Class:
   instance_slot_count: uint32
   static_slot_count: uint32
   static_vars: Slots
-  
-  def __eq__(self, other)-> bool:
+
+  def __eq__(self, other) -> bool:
     if isinstance(other, self.__class__):
       return self.__dict__ == other.__dict__
     else:
@@ -53,14 +58,17 @@ class Class:
     self.instance_slot_count: uint32 = 0
     self.static_slot_count: uint32 = 0
     self.static_vars: Slots = None
-    self.jclass = None # Object
-    if cf == None:
+    self.source_file: str = None
+    self.jclass = None  # Object
+    if cf is None:
       return
     self.access_flags = cf.access_flags
     self.init_started: bool = False
     self.name = cf.class_name()
+    self.source_file = get_source_file(cf)
     self.super_class_name = cf.super_class_name()
     self.interface_names = cf.interface_names()
+    from jvm.rtda.heap.constant_pool import new_constant_pool
     self.constant_pool = new_constant_pool(
         self, cf.constant_pool)
 
@@ -74,11 +82,10 @@ class Class:
   def component_class(self) -> Class:
     component_class_name = get_component_class_name(self.name)
     return self.loader.load_class(component_class_name)
-  
-  def is_primitive(self)->bool:
+
+  def is_primitive(self) -> bool:
     val = primitive_types.get(self.name)
     return val != None
-    
 
   def new_array(self, count: int) -> Object:
     if not self.is_array():
@@ -211,29 +218,31 @@ class Class:
       if method.is_static() and method.name == name and method.descriptor == descriptor:
         return method
     return None
-  def is_jlobject(self)->bool:
+
+  def is_jlobject(self) -> bool:
     return self.name == 'java/lang/Object'
-  def is_jlcloneable(self)->bool:
+
+  def is_jlcloneable(self) -> bool:
     return self.name == 'java/lang/Cloneable'
-  def is_jioserializable(self)->bool:
+
+  def is_jioserializable(self) -> bool:
     return self.name == 'java/io/Serializable'
-  
-  def is_super_interface_of(self, iface:Class)-> bool:
+
+  def is_super_interface_of(self, iface: Class) -> bool:
     return iface.is_subinterface_of(self)
-  
-  def java_name(self)-> str:
-    return self.name.replace('/','.')
-  
-  def get_field(self, name:str, descriptor:str, is_static: bool)-> Field:
+
+  def java_name(self) -> str:
+    return self.name.replace('/', '.')
+
+  def get_field(self, name: str, descriptor: str, is_static: bool) -> Field:
     c = self
     while c != None:
       for field in c.fields:
-        if (field.is_static() == is_static 
-            and field.name == name and field.descriptor == descriptor ):
+        if (field.is_static() == is_static
+                and field.name == name and field.descriptor == descriptor):
           return field
-      
-      c = c.super_class
 
+      c = c.super_class
 
 
 primitive_types = {

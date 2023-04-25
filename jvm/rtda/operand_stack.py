@@ -11,10 +11,17 @@ class OperandStack:
       # print(f"max stack = {max_stack}")
       self.slots = [None] * max_stack
 
+  def clear(self):
+    self.size = 0
+    for i, _ in enumerate(self.slots):
+      if hasattr(self.slots[i], 'ref'):
+        self.slots[i].ref = None
+
   def push_int(self, val: int):
     slot = Slot()
     slot.num = val
-    logging.debug(f"slots size = {len(self.slots)=}, current size = {self.size=}")
+    logging.debug(
+        f"slots size = {len(self.slots)=}, current size = {self.size=}")
     self.slots[self.size] = slot
     self.size += 1
 
@@ -55,8 +62,9 @@ class OperandStack:
   def push_ref(self, o: object):
     slot = Slot()
     slot.ref = o
-    logging.debug(f"push ref {o=} slots size = {len(self.slots)=}, current size = {self.size=}")
-    
+    logging.debug(
+        f"push ref {o=} slots size = {len(self.slots)=}, current size = {self.size=}")
+
     self.slots[self.size] = slot
     self.size += 1
 
@@ -65,8 +73,8 @@ class OperandStack:
       self.push_int(1)
     else:
       self.push_int(0)
-      
-  def pop_bool(self)->bool:
+
+  def pop_bool(self) -> bool:
     return self.pop_int() == 1
 
   def pop_ref(self) -> object:
@@ -85,5 +93,5 @@ class OperandStack:
     logging.debug(f'pop ref = {self.size=}')
     return self.slots[self.size]
 
-  def get_ref_from_top(self, i: int)-> object:
-    return self.slots[self.size - i -1].ref
+  def get_ref_from_top(self, i: int) -> object:
+    return self.slots[self.size - i - 1].ref

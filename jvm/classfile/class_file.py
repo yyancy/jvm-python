@@ -1,4 +1,5 @@
 from __future__ import annotations
+from dataclasses import dataclass
 
 import logging
 import types
@@ -48,6 +49,12 @@ class UnparsedAttributeInfo(AttributeInfo):
     self.data = reader.read_bytes(self.attribute_length)
 
 
+@dataclass
+class LineNumberTableEntry:
+  start_pc:uint16
+  line_number:uint16
+
+
 class LineNumberTableAttrInfo(AttributeInfo):
   def __init__(self, name_index: uint16, length: uint32, cp: ConstantPool) -> None:
     super().__init__(name_index, length, cp)
@@ -55,7 +62,16 @@ class LineNumberTableAttrInfo(AttributeInfo):
     self.data: bytes
 
   def read_info(self, reader: ClassReader) -> None:
-    self.data = reader.read_bytes(self.attribute_length)
+    self.table_length = reader.read_u16()
+    self.data = []
+    for _ in range(self.table_length):
+      entry = LineNumberTableEntry(reader.read_u16(), reader.read_u16())
+      self.data.append(entry)
+
+  def get_line_number(self, pc:int) -> int:
+    return next((int(e.line_number)
+                 for e in reversed(self.data) if pc >= e.start_pc), -1)
+    # self.data = reader.read_bytes(self.attribute_length)
     # self.table_length = reader.read_u16()
     # self.data = reader.read_bytes(self.table_length)
 
@@ -76,6 +92,9 @@ class SourceFileAttributeInfo(AttributeInfo):
 
   def read_info(self, reader: ClassReader) -> None:
     self.sourcefile_index = reader.read_u16()
+  
+  def filename(self)->str:
+    return self.cp().get_utf8(self.sourcefile_index)
 
 
 class ExceptionsAttributeInfo(AttributeInfo):
@@ -106,6 +125,13 @@ class CodeAttributeInfo(AttributeInfo):
     self.exception_table_length: uint16
     self.exception_table: list[ExceptionTableEntry]
     self.attributes: list[AttributeInfo]
+
+  def line_number_table_attribute(self) -> LineNumberTableAttrInfo:
+    return next(
+        (attr for attr in self.attributes
+         if isinstance(attr, LineNumberTableAttrInfo)),
+        None,
+    )
 
   def read_info(self, reader: ClassReader) -> None:
     self.max_stacks = reader.read_u16()
@@ -269,6 +295,11 @@ class ClassFile:
   def interface_names(self) -> list[str]:
       return [self.constant_pool.get_class_name(inter) for inter in self.interfaces]
     # assert False, f'to be implemented'
+  
+  def source_file_attribute(self)-> SourceFileAttributeInfo:
+    for attr in self.attributes:
+      if isinstance(attr, SourceFileAttributeInfo):
+        return attr
 
 
 def parse(class_data: bytes) -> tuple[ClassFile, Err]:
@@ -283,3 +314,4 @@ def parse(class_data: bytes) -> tuple[ClassFile, Err]:
     return None, e
 
   return cf, None
+  

@@ -1,6 +1,6 @@
 
 from .constant_pool import *
-
+from jvm.rtda.heap import cls
 
 class SymRef:
 
