@@ -24,19 +24,14 @@ def create_args_array(loader: ClassLoader, args: list[str]) -> Object:
   return args_arr
 
 
-def interpret(method: Method, log_inst: bool, args: list[str]):
-  thread = jvm.rtda.thread.Thread()
-  frame = thread.new_frame(method)
-  thread.push_frame(frame)
-  jargs = create_args_array(method.clazz.loader, args)
-  frame.local_vars.set_ref(0, jargs)
+def interpret(thread: jvm.rtda.thread.Thread, log_inst: bool):
   try:
     loop(thread, log_inst)
   except Exception as e:
-    catch_err(e, frame, thread)
+    catch_err(thread, e)
 
 
-def catch_err(e: Exception, frame: Frame, thread: jvm.rtda.thread.Thread):
+def catch_err(thread, e):
   # op(frame.local_vars)
   # op(frame.operand_stack)
   log_frames(thread)

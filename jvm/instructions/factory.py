@@ -5,6 +5,7 @@ from jvm.instructions.references.arraylength import ARRAY_LENGTH
 from jvm.instructions.references.athrow import ATHROW
 from jvm.instructions.references.invokeinterface import INVOKE_INTERFACE
 from jvm.instructions.references.invokestatic import INVOKE_STATIC
+from jvm.instructions.references.monitor import MONITOR_ENTER, MONITOR_EXIT
 from jvm.instructions.references.multianewarray import MULTI_ANEW_ARRAY
 from jvm.instructions.references.newarray import NEW_ARRAY
 from jvm.instructions.reserved.invokenative import INVOKE_NATIVE
@@ -171,8 +172,8 @@ single.areturn = ARETURN()
 single._return = RETURN()
 single.arraylength   = ARRAY_LENGTH()
 single.athrow        = ATHROW()
-# single.monitorenter  = MONITOR_ENTER()
-# single.monitorexit   = MONITOR_EXIT()
+single.monitorenter  = MONITOR_ENTER()
+single.monitorexit   = MONITOR_EXIT()
 single.invoke_native = INVOKE_NATIVE()
 
     
@@ -515,9 +516,9 @@ def new_instruction(opcode :int) ->Instruction:
     case 0xa7:
       return GOTO()
     # case 0xa8:
-    # 	return &JSR{}
+    #   return &JSR{}
     # case 0xa9:
-    # 	return &RET{}
+    #   return &RET{}
     case 0xaa:
       return TABLE_SWITCH()
     case 0xab:
@@ -551,7 +552,7 @@ def new_instruction(opcode :int) ->Instruction:
     case 0xb9:
       return INVOKE_INTERFACE()
     # case 0xba:
-    # 	return &INVOKE_DYNAMIC{}
+    #   return &INVOKE_DYNAMIC{}
     case 0xbb:
        return NEW()
     case 0xbc:
@@ -566,10 +567,10 @@ def new_instruction(opcode :int) ->Instruction:
        return CHECK_CAST()
     case 0xc1:
        return INSTANCE_OF()
-    # case 0xc2:
-    # 	return monitorenter
-    # case 0xc3:
-    # 	return monitorexit
+    case 0xc2:
+      return single.monitorenter
+    case 0xc3:
+      return single.monitorexit
     case 0xc4:
       return WIDE()
     case 0xc5:
@@ -581,7 +582,7 @@ def new_instruction(opcode :int) ->Instruction:
     case 0xc8:
       return GOTO_W()
     # case 0xc9:
-    # 	return &JSR_W{}
+    #   return &JSR_W{}
     # case 0xca: breakpoint
     case 0xfe: 
       return single.invoke_native

@@ -26,11 +26,12 @@ class INVOKE_VIRTUAL(Index16Instuction):
 
     ref = frame.operand_stack.get_ref_from_top(
         resolved_method.arg_slot_count - 1)
-    if ref == None:
+    if ref is None:
+      raise SystemExit('java.lang.NullPointerException')
       # hack
-      if method_ref.name == 'println':
-        _println(frame.operand_stack, method_ref.descriptor)
-        return
+      # if method_ref.name == 'println':
+      #   _println(frame.operand_stack, method_ref.descriptor)
+      #   return
 
       raise SystemExit('java.lang.NullPointerException')
 
@@ -39,14 +40,15 @@ class INVOKE_VIRTUAL(Index16Instuction):
             resolved_method.clazz.get_package_name() != current_class.get_package_name() and
             ref.clazz != current_class and
             not ref.clazz.is_subclass_of(current_class)):
-      raise SystemExit('java.lang.IllegalAccessError')
+      if not (ref.clazz.is_array() and resolved_method.name == "clone"):
+        raise Exception('java.lang.IllegalAccessError')
 
     # logging.info(f'{ref.clazz.super_class.methods=}, {method_ref.name}, {method_ref.descriptor}')
     # for m in ref.clazz.super_class.methods:
       # print(f'>>>>>>>>>{m.name=} {m.descriptor=}')
     method_to_be_invoked = lookup_method_in_class(
         ref.clazz, method_ref.name, method_ref.descriptor)
-    if method_to_be_invoked == None or method_to_be_invoked.is_abstract():
+    if method_to_be_invoked is None or method_to_be_invoked.is_abstract():
       raise SystemExit('java.lang.AbstractMethodError')
 
     invoke_method(frame, method_to_be_invoked)

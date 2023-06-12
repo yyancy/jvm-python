@@ -20,6 +20,8 @@ class ClassMember:
     self.access_flags = member_info.access_flags
     self.name = member_info.name()
     self.descriptor = member_info.descriptor()
+    self.signature = ""
+    self.annotation_data:bytes = [] #// RuntimeVisibleAnnotations_attribute
     from .cls import Class
     self.clazz: Class
 

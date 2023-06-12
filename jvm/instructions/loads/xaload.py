@@ -43,7 +43,11 @@ class CALOAD(NoOperandsInstuction):
     check_not_none(arr_ref)
     chars = arr_ref.chars()
     check_index(len(chars), index)
-    stack.push_int(ord(chars[index]))
+    v = chars[index]
+    if isinstance(v, int):
+      stack.push_int(v)
+    else:
+      stack.push_int(ord(v))
 
 
 class DALOAD(NoOperandsInstuction):

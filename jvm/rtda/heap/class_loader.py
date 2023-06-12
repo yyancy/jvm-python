@@ -151,13 +151,13 @@ def init_static_final_var(clazz: cls.Class, field: Field):
         vars.set_int(slot_id, val)
       case 'J':
         val: int64 = cp.get_constant(cp_index)
-        vars.set_int(slot_id, val)
+        vars.set_long(slot_id, val)
       case 'F':
         val: float = cp.get_constant(cp_index)
-        vars.set_int(slot_id, val)
+        vars.set_float(slot_id, val)
       case 'D':
         val: float = cp.get_constant(cp_index)
-        vars.set_int(slot_id, val)
+        vars.set_double(slot_id, val)
       case 'Ljava/lang/String;':
         from jvm.rtda.heap.string_pool import jstring
         py_str: str = cp.get_constant(cp_index)

@@ -6,14 +6,32 @@ from jvm.instructions.base.method_invoke_logic import invoke_method
 
 
 def initialize(frame: Frame):
-  vm_class = frame.method.clazz
-  saved_props = vm_class.get_ref_var('savedProps', 'Ljava/util/Properties;')
-  key = string_pool.jstring(vm_class.loader, 'foo')
-  val = string_pool.jstring(vm_class.loader, 'bar')
-  frame.operand_stack.push_ref(saved_props)
-  frame.operand_stack.push_ref(key)
-  frame.operand_stack.push_ref(val)
-  props_class = vm_class.loader.load_class('java/util/Properties')
-  set_prop_method = props_class.get_instance_method(
-      'java/util/Properties', '(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/Object;')
-  invoke_method(frame, set_prop_method)
+  class_loader = frame.method.clazz.loader
+  jl_sys_class = class_loader.load_class('java/lang/System')
+  init_sys_class = jl_sys_class.get_static_method(
+      "initializeSystemClass", "()V")
+  invoke_method(frame, init_sys_class)
+
+
+def set_in0(frame: Frame):
+  _vars = frame.local_vars
+  _in = _vars.get_ref(0)
+
+  sys_class = frame.method.clazz
+  sys_class.set_ref_var("in", "Ljava/io/InputStream;", _in)
+
+
+def set_out0(frame: Frame):
+  _vars = frame.local_vars
+  out = _vars.get_ref(0)
+
+  sys_class = frame.method.clazz
+  sys_class.set_ref_var('out', "Ljava/io/PrintStream;", out)
+
+
+def set_err0(frame: Frame):
+  _vars = frame.local_vars
+  err = _vars.get_ref(0)
+
+  sys_class = frame.method.clazz
+  sys_class.set_ref_var("err", "Ljava/io/PrintStream;", err)

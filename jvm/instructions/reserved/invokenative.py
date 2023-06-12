@@ -12,7 +12,7 @@ class INVOKE_NATIVE(NoOperandsInstuction):
     native_method = registry.find_native_method(class_name,
                                               method_name,
                                               method_descriptor)
-    if native_method == None:
+    if native_method is None:
       method_info = f'{class_name}.{method_name}{method_descriptor}'
       raise SystemExit(f'java.lang.UnsatisfiedLinkError: {method_info}')
 

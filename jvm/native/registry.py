@@ -1,10 +1,9 @@
 
 
-import typing
 from jvm.rtda.frame import Frame
 
 
-registry = dict()
+registry = {}
 
 def register(class_name: str, method_name: str,
              method_descriptor: str, method):
@@ -22,6 +21,9 @@ def find_native_method(class_name: str, method_name: str,
   val = registry.get(key)
   if val != None:
     return val
-  if method_descriptor == '()V' and method_name == 'registerNatives':
+  if method_descriptor == '()V' and method_name in {
+      'registerNatives',
+      'initIDs',
+  }:
     return emptyNativeMethod
   return None

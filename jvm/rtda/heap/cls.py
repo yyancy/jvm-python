@@ -82,6 +82,10 @@ class Class:
   def component_class(self) -> Class:
     component_class_name = get_component_class_name(self.name)
     return self.loader.load_class(component_class_name)
+  
+  def set_ref_var(self, field_name:str, field_descriptor:str, ref):
+    field = self.get_field(field_name,field_descriptor, True)
+    self.static_vars.set_ref(field.slot_id, ref)
 
   def is_primitive(self) -> bool:
     val = primitive_types.get(self.name)
@@ -213,11 +217,24 @@ class Class:
   def get_main_method(self) -> method.Method:
     return self.get_static_method('main', "([Ljava/lang/String;)V")
 
-  def get_static_method(self, name: str, descriptor: str) -> method.Method:
-    for method in self.methods:
-      if method.is_static() and method.name == name and method.descriptor == descriptor:
-        return method
+  def get_method(self,name: str, descriptor: str, is_static:bool)-> method.Method:
+    c = self
+    while c is not None:
+      for method in c.methods:
+        if (method.is_static() == is_static
+            and method.name ==name and method.descriptor == descriptor):
+          return method
+      
+      c = c.super_class
+    
     return None
+
+
+  def get_instance_method(self, name: str, descriptor: str)->method.Method:
+    return self.get_method(name, descriptor, False)
+
+  def get_static_method(self, name: str, descriptor: str) -> method.Method:
+    return self.get_method(name, descriptor, True)
 
   def is_jlobject(self) -> bool:
     return self.name == 'java/lang/Object'
@@ -243,6 +260,21 @@ class Class:
           return field
 
       c = c.super_class
+  
+  def get_fields(self, public_only:bool) -> list[Field]:
+    if public_only:
+      return [field for field in self.fields if field.is_public()]
+    else:
+      return self.fields
+  
+  def get_constructor(self, descriptor:str)->method.Method:
+    return self.get_instance_method("<init>", descriptor)
+
+  def get_constructors(self, publicOnly:bool) -> list[method.Method]:
+    return [
+        method for method in self.methods
+        if method.is_constructor() and (not publicOnly or method.is_public())
+    ]
 
 
 primitive_types = {

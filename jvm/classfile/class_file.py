@@ -41,9 +41,10 @@ class DeprecatedAttributeInfo(AttributeInfo):
 
 
 class UnparsedAttributeInfo(AttributeInfo):
-  def __init__(self, name_index: uint16, length: uint32, cp: ConstantPool) -> None:
+  def __init__(self,name:str, name_index: uint16, length: uint32, cp: ConstantPool) -> None:
     super().__init__(name_index, length, cp)
     self.data: bytes
+    self.name: str = name
 
   def read_info(self, reader: ClassReader) -> None:
     self.data = reader.read_bytes(self.attribute_length)
@@ -170,8 +171,21 @@ class MemberInfo:
       match info:
         case CodeAttributeInfo():
           return info
-
     return None
+  def exceptions_attribute(self) -> ExceptionsAttributeInfo:
+    for info in self.attributes:
+      match info:
+        case ExceptionsAttributeInfo():
+          return info
+    return None
+
+  def constant_value_attribute(self) -> ConstantValueAttributeInfo:
+    for info in self.attributes:
+      match info:
+        case ConstantValueAttributeInfo():
+          return info
+    return None
+
   def constant_value_attribute(self)-> ConstantValueAttributeInfo:
     for attr_info in self.attributes:
       match attr_info:
@@ -179,6 +193,28 @@ class MemberInfo:
           return attr_info 
     
     return None
+
+  def runtime_visible_annotations_attribute_data(self) ->bytes:
+    return self.get_unparsed_attribute_data("RuntimeVisibleAnnotations")
+
+  def  runtime_visible_parameter_annotations_attribute_data(self)->bytes:
+    return self.get_unparsed_attribute_data("RuntimeVisibleParameterAnnotationsAttribute")
+
+  def  annotation_default_attribute_data(self)->bytes:
+    return self.get_unparsed_attribute_data("AnnotationDefault")
+
+
+  def get_unparsed_attribute_data(self,name :str)-> bytes:
+    for  attrInfo in self.attributes:
+      match attrInfo:
+        case UnparsedAttributeInfo() as unparsedAttr:
+          if unparsedAttr.name == name:
+            return unparsedAttr.data
+    return None
+
+
+
+
 
 
 def read_members(reader: ClassReader, cp: ConstantPool) -> list[MemberInfo]:
@@ -220,7 +256,7 @@ def read_attribute(reader: ClassReader, cp: ConstantPool) -> AttributeInfo:
     case "Exceptions":
       ai = ExceptionsAttributeInfo(attribute_name_index, attribute_length, cp)
     case _:
-      ai = UnparsedAttributeInfo(attribute_name_index, attribute_length, cp)
+      ai = UnparsedAttributeInfo(code, attribute_name_index, attribute_length, cp)
   ai.read_info(reader)
   return ai
 
@@ -253,7 +289,7 @@ class ClassFile:
     self.read_and_check_version(reader)
 
     self.constant_pool = read_constant_pool(reader)
-    # print(f'constant pool = {self.constant_pool}')
+    # print(f'constant pool =:self.constant_pool')
 
     self.access_flags = reader.read_u16()
     self.this_class = reader.read_u16()
@@ -268,7 +304,7 @@ class ClassFile:
     self.magic = reader.read_u32()
     if self.magic != 0xCAFEBABE:
       raise Err(
-          f"java.lang.ClassFormatError: expected magic number 0xCAFEBABE, got {self.magic:0x}")
+          f"java.lang.ClassFormatError: expected magic number 0xCAFEBABE, got:self.magic:0x")
 
   # read and check class file version
   def read_and_check_version(self, reader: ClassReader):
@@ -280,7 +316,7 @@ class ClassFile:
     if self.major_version in [46, 47, 49, 50, 51, 52, 55] and self.minor_version == 0:
       return
     raise Err(
-        f"Unsupport class file version: {self.minor_version=} {self.major_version}")
+        f"Unsupport class file version::self.minor_version=:self.major_version")
 
   def class_name(self, ) -> str:
       return self.constant_pool.get_class_name(self.this_class)
@@ -310,7 +346,7 @@ def parse(class_data: bytes) -> tuple[ClassFile, Err]:
     if not cr.is_end():
       raise Exception("parse error: class file are not fully parsed.")
   except Exception as e:
-    logging.error(f"could not read class file: {e}")
+    logging.error(f"could not read class file::e")
     return None, e
 
   return cf, None

@@ -68,6 +68,9 @@ class OperandStack:
     self.slots[self.size] = slot
     self.size += 1
 
+  def push_boolean(self, bool):
+    self.push_bool(bool)
+
   def push_bool(self, o: bool):
     if o:
       self.push_int(1)

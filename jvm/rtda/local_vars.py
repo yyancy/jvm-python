@@ -30,12 +30,12 @@ class LocalVars:
   def get_long(self, i: int) -> int:
     return self.slots[i].num
 
-  def set_double(self, i:int,val:int):
+  def set_double(self, i: int, val: int):
     slot = Slot()
     slot.num = val
     self.slots[i] = slot
     self.slots[i+1] = slot
-    
+
   def get_double(self, i: int) -> int:
     return self.slots[i].num
 
@@ -46,7 +46,15 @@ class LocalVars:
 
   def get_ref(self, i: int) -> object:
     return self.slots[i].ref
+
   def get_this(self) -> object:
     return self.slots[0].ref
-  def set_slot(self, i:int, slot:Slot):
+
+  def set_slot(self, i: int, slot: Slot):
     self.slots[i] = slot
+  
+  def get_bool(self, i:int)->bool:
+    return self.get_int(i) == 1
+
+  def get_boolean(self, i:int)->bool:
+    return self.get_int(i) == 1

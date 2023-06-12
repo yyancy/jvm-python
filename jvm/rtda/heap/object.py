@@ -21,6 +21,7 @@ class Object:
   def __init__(self, clazz: cls.Class) -> None:
     self.clazz = clazz
     self.data = Slots(clazz.instance_slot_count)
+    self.extra = None
 
   def is_instance_of(self, clazz: cls.Class) -> bool:
     return clazz.is_assignable_from(self.clazz)
@@ -58,6 +59,16 @@ class Object:
     field = self.clazz.get_field(name, descriptor, False)
     slots: Slots = self.data
     return slots.get_ref(field.slot_id)
+  
+  def set_intvar(self, name: str, descriptor: str, val: int):
+    field = self.clazz.get_field(name, descriptor, False)
+    slots: Slots = self.data
+    slots.set_int(field.slot_id, val)
+  def get_intvar(self, name: str, descriptor: str) -> Object:
+    field = self.clazz.get_field(name, descriptor, False)
+    slots: Slots = self.data
+    return slots.get_int(field.slot_id)
+
 
   def array_length(self) -> int:
     match self.data:
@@ -66,7 +77,7 @@ class Object:
       case bytes() as arr:
         return len(arr)
       case _:
-        raise SystemExit(f'Not array!')
+        raise Exception(f'Not array!')
 
   def clone_data(self):
     match self.data:
@@ -75,7 +86,7 @@ class Object:
         new_data = [0] * length
         for i, v in enumerate(self.data):
           new_data[i] = v
-          return new_data
+        return new_data
       case Slots() as s:
         length = len(s.slots)
         new_data = Slots(length)

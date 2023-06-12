@@ -23,7 +23,7 @@ class IREM(NoOperandsInstuction):
     stack = frame.operand_stack 
     v2 = stack.pop_int()
     v1 = stack.pop_int()
-    assert v2 ==0, f"java.lang.ArithmeticException: / by zero"
+    assert v2 !=0, "java.lang.ArithmeticException: / by zero"
     
     result  = v1 % v2
     stack.push_int(result)
